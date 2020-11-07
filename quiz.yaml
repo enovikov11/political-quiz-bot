@@ -74,9 +74,9 @@ questions:
     more world than nation: 0
     more progress than tradition: 0
   ru:
-    question: Международная торговля выгодна.
-    more equality than markets: -5
-    more liberty than authority: 10
+    question: Международная торговля невыгодна.
+    more equality than markets: 5
+    more liberty than authority: -10
     more world than nation: 0
     more progress than tradition: 0
 - en:
@@ -90,7 +90,7 @@ questions:
     more equality than markets: 10
     more liberty than authority: 0
     more world than nation: 0
-    more progress than tradition: 5
+    more progress than tradition: 0
 - en:
     question: It would be best if social programs were abolished in favor of private
       charity.
@@ -104,7 +104,7 @@ questions:
     more equality than markets: -10
     more liberty than authority: 0
     more world than nation: 0
-    more progress than tradition: -5
+    more progress than tradition: 0
 - en:
     question: Taxes should be increased on the rich to provide for the poor.
     more equality than markets: 10
@@ -177,7 +177,7 @@ questions:
     more equality than markets: 10
     more liberty than authority: 0
     more world than nation: 0
-    more progress than tradition: 10
+    more progress than tradition: 5
 - en:
     question: The means of production should belong to the workers who use them.
     more equality than markets: 10
@@ -321,7 +321,7 @@ questions:
     question: Исследования должны проводиться в международном масштабе.
     more equality than markets: 0
     more liberty than authority: 0
-    more world than nation: -10
+    more world than nation: 10
     more progress than tradition: 10
 - en:
     question: Governments should be accountable to the international community.
@@ -368,7 +368,7 @@ questions:
   ru:
     question: Наши национальные ценности должны быть распространены как можно шире.
     more equality than markets: 0
-    more liberty than authority: -10
+    more liberty than authority: -5
     more world than nation: -10
     more progress than tradition: 0
 - en:
@@ -554,7 +554,7 @@ questions:
   ru:
     question: Дети должны воспитываться в традиционных или религиозных ценностях.
     more equality than markets: 0
-    more liberty than authority: -10
+    more liberty than authority: -5
     more world than nation: 0
     more progress than tradition: -10
 - en:
@@ -752,7 +752,7 @@ questions:
     question: Владение оружием должно быть запрещено тем, у кого нет веской причины.
     more equality than markets: 0
     more liberty than authority: -10
-    more world than nation: 10
+    more world than nation: 0
     more progress than tradition: 0
 - en:
     question: I support single-payer, universal healthcare.
@@ -836,7 +836,7 @@ questions:
   ru:
     question: Правительства должны быть так же обеспокоены иностранными гражданами,
       как и теми, кто находится в их границах.
-    more equality than markets: 10
+    more equality than markets: 0
     more liberty than authority: 0
     more world than nation: 10
     more progress than tradition: 0
