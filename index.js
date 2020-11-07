@@ -20,7 +20,7 @@ const fs = require('fs');
 const YAML = require('yaml');
 const fetch = require('node-fetch');
 
-const { questions } = YAML.parse(fs.readFileSync('./quiz.yaml', 'utf8'))
+const { questions, messages, buttons } = YAML.parse(fs.readFileSync('./quiz.yaml', 'utf8'))
 const api_base = process.env.QUIZBOT_API_BASE || "https://api.telegram.org/";
 const api_key = process.env.QUIZBOT_API_KEY;
 const locale = 'ru';
@@ -31,44 +31,131 @@ const UPDATE_POLLING_INTERVAL = '60';
 let offset = 0;
 let update_errors_count = 0;
 let chats_chains = {};
-let chats_state = {};
-let stat_all_voted = { "more equality than markets": 0, "more liberty than authority": 0, "more progress than tradition": 0, "more world than nation": 0 };
-let stat_all_max = { "more equality than markets": 0, "more liberty than authority": 0, "more progress than tradition": 0, "more world than nation": 0 };
+let chats_states = {};
+let global_stats = {
+    value: { "more equality than markets": 0, "more liberty than authority": 0, "more progress than tradition": 0, "more world than nation": 0 },
+    max: { "more equality than markets": 0, "more liberty than authority": 0, "more progress than tradition": 0, "more world than nation": 0 },
+    count: 0
+}
+let users_count = 0
 
-function make_permulation(length) {
-    return new Array(length).fill(0).map((_, i) => ({ value: Math.random(), i }))
-        .sort((a, b) => a.value > b.value ? 1 : -1).map(({ i }) => i);
+function apply_answer(stats, question_id, old_answer, new_answer) {
+    const question = questions[question_id];
+    if (!question || isNaN(+new_answer)) {
+        console.error(stats, question_id, old_answer, new_answer)
+        throw new Error('bad data to apply');
+    }
+
+    if (isNaN(+old_answer)) {
+        stats.count++;
+    } else {
+        stats.value["more equality than markets"] -= (+old_answer * question["more equality than markets"]);
+        stats.value["more liberty than authority"] -= (+old_answer * question["more liberty than authority"]);
+        stats.value["more progress than tradition"] -= (+old_answer * question["more progress than tradition"]);
+        stats.value["more world than nation"] -= (+old_answer * question["more world than nation"]);
+
+        stats.max["more equality than markets"] -= Math.abs(+old_answer * question["more equality than markets"]);
+        stats.max["more liberty than authority"] -= Math.abs(+old_answer * question["more liberty than authority"]);
+        stats.max["more progress than tradition"] -= Math.abs(+old_answer * question["more progress than tradition"]);
+        stats.max["more world than nation"] -= Math.abs(+old_answer * question["more world than nation"]);
+    }
+
+    stats.value["more equality than markets"] += (+new_answer * question["more equality than markets"]);
+    stats.value["more liberty than authority"] += (+new_answer * question["more liberty than authority"]);
+    stats.value["more progress than tradition"] += (+new_answer * question["more progress than tradition"]);
+    stats.value["more world than nation"] += (+new_answer * question["more world than nation"]);
+
+    stats.max["more equality than markets"] += Math.abs(+new_answer * question["more equality than markets"]);
+    stats.max["more liberty than authority"] += Math.abs(+new_answer * question["more liberty than authority"]);
+    stats.max["more progress than tradition"] += Math.abs(+new_answer * question["more progress than tradition"]);
+    stats.max["more world than nation"] += Math.abs(+new_answer * question["more world than nation"]);
+}
+
+function fetch_api(method, data) {
+    return fetch(api_base + 'bot' + api_key + '/' + method, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json' }
+    }).then(res => res.json());
 }
 
 async function on_message({ chat, text }) {
-    let reply_text = 'Не понял тебя', keyboard;
+    let message = { text: messages[locale]['not recognized'] };
 
     try {
-        if (!chats_state[chat.id]) {
-            chats_state[chat.id] = { queue: make_permulation(questions.length), is_running: true, question_id: -1, stat: { "more equality than markets": 0, "more liberty than authority": 0, "more progress than tradition": 0, "more world than nation": 0 } };
+        if (!chats_states[chat.id]) {
+            chats_states[chat.id] = {
+                step: 'new_chat',
+                current_answer_id: 0,
+                answers: new Array(questions.length).fill().map((_, i) => ({ random: Math.random(), question_id: i }))
+                    .sort((a, b) => a.random > b.random ? 1 : -1).map(({ question_id }) => ({ question_id })),
+                stats: {
+                    value: { "more equality than markets": 0, "more liberty than authority": 0, "more progress than tradition": 0, "more world than nation": 0 },
+                    max: { "more equality than markets": 0, "more liberty than authority": 0, "more progress than tradition": 0, "more world than nation": 0 },
+                    count: 0
+                }
+            };
+            users_count++;
+        }
+        const state = chats_states[chat.id];
+        const [button_pressed] = Object.keys(buttons[locale]).filter(button => buttons[locale][button] === text);
+
+        if (state.step === 'quiz_active' && !isNaN(+button_pressed)) {
+            apply_answer(global_stats, state.answers[state.current_answer_id].question_id, state.answers[state.current_answer_id].value, +button_pressed);
+            apply_answer(state.stats, state.answers[state.current_answer_id].question_id, state.answers[state.current_answer_id].value, +button_pressed);
+            state.answers[state.current_answer_id].value = +button_pressed;
+
+            if (state.current_answer_id < state.answers.length) {
+                state.current_answer_id++;
+            } else {
+                state.step = 'results';
+            }
+        } else if (state.step === 'quiz_active' && button_pressed === 'back' && state.current_answer_id > 0) {
+            state.current_answer_id--;
+        } else if (state.step === 'quiz_active' && button_pressed === 'forward' && state.current_answer_id < state.answers.length && state.answers[state.current_answer_id].value !== undefined) {
+            state.current_answer_id++;
+        } else if (state.step === 'quiz_active' && button_pressed === 'results') {
+            state.step = 'results';
         }
 
-        if (chats_state[chat.id].is_running) {
-            chats_state[chat.id].question_id++;
+        if (state.step === 'new_chat') {
+            await fetch_api('sendMessage', {
+                chat_id: chat.id, text: messages[locale].welcome
+            });
 
-            reply_text = questions[chats_state[chat.id].queue[chats_state[chat.id].question_id]].question[locale];
-            keyboard = [[{ text: '🟢🟢 Да' }, { text: '🟢 Скорее да' }, { text: '⚪ Не знаю' }, { text: '🔴 Скорее нет' }, { text: '🔴🔴 Нет' }]];
+            state.step = 'quiz_active';
         }
 
-
+        if (state.step === 'quiz_active') {
+            message = {
+                text: questions[state.answers[state.current_answer_id].question_id].question[locale],
+                reply_markup: {
+                    keyboard: [
+                        [
+                            { text: buttons[locale]['-1'] },
+                            { text: buttons[locale]['-0.5'] },
+                            { text: buttons[locale]['0'] },
+                            { text: buttons[locale]['0.5'] },
+                            { text: buttons[locale]['1'] }
+                        ], [
+                            state.current_answer_id > 0 && buttons[locale].back, buttons[locale].results,
+                            state.current_answer_id < state.answers.length && state.answers[state.current_answer_id].value !== undefined && buttons[locale].forward
+                        ].filter(Boolean)
+                    ], resize_keyboard: true
+                }
+            };
+        } else if (state.step === 'results') {
+            message = {
+                text: JSON.stringify(state.stats),
+                reply_markup: { remove_keyboard: true }
+            }
+        }
     } catch (e) {
         console.error(e);
-        reply_text = 'Я сломался, но сообщил своему создателю об этом';
-        keyboard = undefined;
+        message = { text: messages[locale].error };
     }
 
-    const result = await fetch(api_base + 'bot' + api_key + '/sendMessage', {
-        method: 'POST',
-        body: JSON.stringify({
-            chat_id: chat.id, text: reply_text, reply_markup: { keyboard, remove_keyboard: keyboard ? undefined : true }
-        }),
-        headers: { 'Content-Type': 'application/json' }
-    }).then(res => res.json());
+    const result = await fetch_api('sendMessage', { chat_id: chat.id, ...message });
 
     if (!result.ok) {
         throw new Error(JSON.stringify(result));
@@ -90,14 +177,21 @@ async function on_result({ message }) {
 }
 
 async function main() {
+    if (questions.some(question => [
+        "more equality than markets",
+        "more liberty than authority",
+        "more progress than tradition",
+        "more world than nation"
+    ].some(key => isNaN(question[key])))) {
+        return;
+    }
+
     while (true) {
         update_errors_count = 0;
         try {
-            const updates_result = await fetch(api_base + 'bot' + api_key + '/getUpdates', {
-                method: 'POST',
-                body: JSON.stringify({ offset, timeout: UPDATE_POLLING_INTERVAL, allowed_updates: ['message'] }),
-                headers: { 'Content-Type': 'application/json' }
-            }).then(res => res.json());
+            const updates_result = await fetch_api('getUpdates', {
+                offset, timeout: UPDATE_POLLING_INTERVAL, allowed_updates: ['message']
+            });
 
             if (!updates_result.ok) {
                 throw new Error(JSON.stringify(updates_result));
