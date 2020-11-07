@@ -1,4 +1,20 @@
 // https://core.telegram.org/bots/api
+// https://www.npmjs.com/package/node-fetch
+
+/*
+Корнер кейсы:
+- много сообщений
+- пригласили в группу
+- пришло некорректное обновление
+- два сообщения почти сразу
+- пересланное сообщение
+- что-то зависло
+- сеть потеряна
+- сеть флапает
+- пустой текст
+
+getCommands
+*/
 
 const fs = require('fs');
 const YAML = require('yaml');
@@ -15,27 +31,48 @@ const UPDATE_POLLING_INTERVAL = '60';
 let offset = 0;
 let update_errors_count = 0;
 let chats_chains = {};
-let stat_voted = { "more equality than markets": 0, "more liberty than authority": 0, "more progress than tradition": 0, "more world than nation": 0 };
-let stat_max = { "more equality than markets": 0, "more liberty than authority": 0, "more progress than tradition": 0, "more world than nation": 0 };
+let chats_state = {};
+let stat_all_voted = { "more equality than markets": 0, "more liberty than authority": 0, "more progress than tradition": 0, "more world than nation": 0 };
+let stat_all_max = { "more equality than markets": 0, "more liberty than authority": 0, "more progress than tradition": 0, "more world than nation": 0 };
 
-function makePermulation(length) {
+function make_permulation(length) {
     return new Array(length).fill(0).map((_, i) => ({ value: Math.random(), i }))
         .sort((a, b) => a.value > b.value ? 1 : -1).map(({ i }) => i);
 }
 
 async function on_message({ chat, text }) {
-    await fetch(api_base + 'bot' + api_key + '/sendMessage', {
+    let reply_text = 'Не понял тебя', keyboard;
+
+    try {
+        if (!chats_state[chat.id]) {
+            chats_state[chat.id] = { queue: make_permulation(questions.length), is_running: true, question_id: -1, stat: { "more equality than markets": 0, "more liberty than authority": 0, "more progress than tradition": 0, "more world than nation": 0 } };
+        }
+
+        if (chats_state[chat.id].is_running) {
+            chats_state[chat.id].question_id++;
+
+            reply_text = questions[chats_state[chat.id].queue[chats_state[chat.id].question_id]].question[locale];
+            keyboard = [[{ text: '🟢🟢 Да' }, { text: '🟢 Скорее да' }, { text: '⚪ Не знаю' }, { text: '🔴 Скорее нет' }, { text: '🔴🔴 Нет' }]];
+        }
+
+
+    } catch (e) {
+        console.error(e);
+        reply_text = 'Я сломался, но сообщил своему создателю об этом';
+        keyboard = undefined;
+    }
+
+    const result = await fetch(api_base + 'bot' + api_key + '/sendMessage', {
         method: 'POST',
         body: JSON.stringify({
-            chat_id: chat.id, text: text + text,
-
-            reply_markup: {
-                keyboard: [[{ text: "1" }, { text: "2" }, { text: "3" }, { text: "4" }, { text: "5" }]]
-                // remove_keyboard: true
-            }
+            chat_id: chat.id, text: reply_text, reply_markup: { keyboard, remove_keyboard: keyboard ? undefined : true }
         }),
         headers: { 'Content-Type': 'application/json' }
     }).then(res => res.json());
+
+    if (!result.ok) {
+        throw new Error(JSON.stringify(result));
+    }
 }
 
 async function on_result({ message }) {

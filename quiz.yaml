@@ -2,507 +2,507 @@
 credits: Based on https://github.com/8values/8values.github.io https://github.com/8values-ru/8values-ru.github.io
 questions:
 - question:
-    en: Oppression by corporations is more of a concern than oppression by governments
+    en: Oppression by corporations is more of a concern than oppression by governments?
     ru: Притеснение со стороны корпораций вызывает большее беспокойство, чем со стороны
-      государства
+      государства?
   more equality than markets: 10
   more liberty than authority: 0
   more progress than tradition: 0
   more world than nation: 0
 - question:
     en: It is necessary for the government to intervene in the economy to protect
-      consumers
-    ru: Правительству необходимо вмешиваться в экономику для защиты потребителей
+      consumers?
+    ru: Правительству необходимо вмешиваться в экономику для защиты потребителей?
   more equality than markets: 10
   more liberty than authority: 0
   more progress than tradition: 0
   more world than nation: 0
 - question:
-    en: The freer the markets, the freer the people
-    ru: Чем свободнее рынок, тем свободнее люди
+    en: The freer the markets, the freer the people?
+    ru: Чем свободнее рынок, тем свободнее люди?
   more equality than markets: -10
   more liberty than authority: 0
   more progress than tradition: 0
   more world than nation: 0
 - question:
     en: It is better to maintain a balanced budget than to ensure welfare for all
-      citizens
+      citizens?
     ru: Лучше поддерживать сбалансированный бюджет, чем обеспечивать благосостояние
-      всех граждан
+      всех граждан?
   more equality than markets: -10
   more liberty than authority: 0
   more progress than tradition: 0
   more world than nation: 0
 - question:
     en: Publicly-funded research is more beneficial to the people than leaving it
-      to the market
-    ru: Публичное финансирование исследований более выгодно людям, чем рыночное финансирование
+      to the market?
+    ru: Публичное финансирование исследований более выгодно людям, чем рыночное финансирование?
   more equality than markets: 10
   more liberty than authority: 0
   more progress than tradition: 10
   more world than nation: 0
 - question:
-    en: Tariffs on international trade are important to encourage local production
-    ru: Международная торговля невыгодна
+    en: Tariffs on international trade are important to encourage local production?
+    ru: Международная торговля невыгодна?
   more equality than markets: 5
   more liberty than authority: -10
   more progress than tradition: 0
   more world than nation: 0
 - question:
-    en: From each according to his ability, to each according to his needs
-    ru: С каждого по способностям, каждому по потребностям
+    en: From each according to his ability, to each according to his needs?
+    ru: С каждого по способностям, каждому по потребностям?
   more equality than markets: 10
   more liberty than authority: 0
   more progress than tradition: 0
   more world than nation: 0
 - question:
-    en: It would be best if social programs were abolished in favor of private charity
+    en: It would be best if social programs were abolished in favor of private charity?
     ru: Было бы лучше, если бы социальные программы были упразднены в пользу частной
-      благотворительности
+      благотворительности?
   more equality than markets: -10
   more liberty than authority: 0
   more progress than tradition: 0
   more world than nation: 0
 - question:
-    en: Taxes should be increased on the rich to provide for the poor
-    ru: Налоги на богатых должны быть увеличены для обеспечения бедных
+    en: Taxes should be increased on the rich to provide for the poor?
+    ru: Налоги на богатых должны быть увеличены для обеспечения бедных?
   more equality than markets: 10
   more liberty than authority: 0
   more progress than tradition: 0
   more world than nation: 0
 - question:
-    en: Inheritance is a legitimate form of wealth
-    ru: Наследование — законная форма богатства
+    en: Inheritance is a legitimate form of wealth?
+    ru: Наследование — законная форма богатства?
   more equality than markets: -10
   more liberty than authority: 0
   more progress than tradition: -5
   more world than nation: 0
 - question:
-    en: Basic utilities like roads and electricity should be publicly owned
+    en: Basic utilities like roads and electricity should be publicly owned?
     ru: Коммунальные услуги, такие как дороги и электричество, должны находиться в
-      общественной собственности
+      общественной собственности?
   more equality than markets: 10
   more liberty than authority: 0
   more progress than tradition: 0
   more world than nation: 0
 - question:
-    en: Government intervention is a threat to the economy
-    ru: Чрезмерное вмешательство правительства — угроза для экономики
+    en: Government intervention is a threat to the economy?
+    ru: Чрезмерное вмешательство правительства — угроза для экономики?
   more equality than markets: -10
   more liberty than authority: 0
   more progress than tradition: 0
   more world than nation: 0
 - question:
-    en: Those with a greater ability to pay should receive better healthcare
-    ru: Те, кто могут платить больше, должны получать лучшее медицинское обслуживание
+    en: Those with a greater ability to pay should receive better healthcare?
+    ru: Те, кто могут платить больше, должны получать лучшее медицинское обслуживание?
   more equality than markets: -10
   more liberty than authority: 0
   more progress than tradition: 0
   more world than nation: 0
 - question:
-    en: Quality education is a right of all people
-    ru: Качественное образование — право всех людей
+    en: Quality education is a right of all people?
+    ru: Качественное образование — право всех людей?
   more equality than markets: 10
   more liberty than authority: 0
   more progress than tradition: 5
   more world than nation: 0
 - question:
-    en: The means of production should belong to the workers who use them
-    ru: Средства производства должны принадлежать рабочим, использующим их
+    en: The means of production should belong to the workers who use them?
+    ru: Средства производства должны принадлежать рабочим, использующим их?
   more equality than markets: 10
   more liberty than authority: 0
   more progress than tradition: 0
   more world than nation: 0
 - question:
-    en: The United Nations should be abolished
-    ru: ООН должна быть распущена
+    en: The United Nations should be abolished?
+    ru: ООН должна быть распущена?
   more equality than markets: 0
   more liberty than authority: -5
   more progress than tradition: 0
   more world than nation: -10
 - question:
-    en: Military action by our nation is often necessary to protect it
-    ru: Зачастую необходимы военные действия, чтобы защитить нашу нацию
+    en: Military action by our nation is often necessary to protect it?
+    ru: Зачастую необходимы военные действия, чтобы защитить нашу нацию?
   more equality than markets: 0
   more liberty than authority: -10
   more progress than tradition: 0
   more world than nation: -10
 - question:
-    en: I support regional unions, such as the European Union
-    ru: Я поддерживаю региональные объединения, такие как Евросоюз
+    en: I support regional unions, such as the European Union?
+    ru: Я поддерживаю региональные объединения, такие как Евросоюз?
   more equality than markets: -5
   more liberty than authority: 10
   more progress than tradition: 5
   more world than nation: 10
 - question:
-    en: It is important to maintain our national sovereignty
-    ru: Важно сохранить наш национальный суверенитет
+    en: It is important to maintain our national sovereignty?
+    ru: Важно сохранить наш национальный суверенитет?
   more equality than markets: 0
   more liberty than authority: -5
   more progress than tradition: 0
   more world than nation: -10
 - question:
-    en: A united world government would be beneficial to mankind
-    ru: Единое мировое правительство принесёт человечеству пользу
+    en: A united world government would be beneficial to mankind?
+    ru: Единое мировое правительство принесёт человечеству пользу?
   more equality than markets: 0
   more liberty than authority: 0
   more progress than tradition: 0
   more world than nation: 10
 - question:
-    en: It is more important to retain peaceful relations than to further our strength
-    ru: Важнее сохранять мирные отношения, чем наращивать силу
+    en: It is more important to retain peaceful relations than to further our strength?
+    ru: Важнее сохранять мирные отношения, чем наращивать силу?
   more equality than markets: 0
   more liberty than authority: 0
   more progress than tradition: 0
   more world than nation: 10
 - question:
-    en: Wars do not need to be justified to other countries
-    ru: Наша страна не должна оправдывать войны
+    en: Wars do not need to be justified to other countries?
+    ru: Наша страна не должна оправдывать войны?
   more equality than markets: 0
   more liberty than authority: -10
   more progress than tradition: 0
   more world than nation: -10
 - question:
-    en: Military spending is a waste of money
-    ru: Военные расходы - пустая трата денег
+    en: Military spending is a waste of money?
+    ru: Военные расходы - пустая трата денег?
   more equality than markets: 0
   more liberty than authority: 10
   more progress than tradition: 0
   more world than nation: 10
 - question:
-    en: International aid is a waste of money
-    ru: Международная помощь - пустая трата денег
+    en: International aid is a waste of money?
+    ru: Международная помощь - пустая трата денег?
   more equality than markets: -5
   more liberty than authority: 0
   more progress than tradition: 0
   more world than nation: -10
 - question:
-    en: My nation is great
-    ru: У меня великая нация
+    en: My nation is great?
+    ru: У меня великая нация?
   more equality than markets: 0
   more liberty than authority: 0
   more progress than tradition: 0
   more world than nation: -10
 - question:
-    en: Research should be conducted on an international scale
-    ru: Исследования должны проводиться в международном масштабе
+    en: Research should be conducted on an international scale?
+    ru: Исследования должны проводиться в международном масштабе?
   more equality than markets: 0
   more liberty than authority: 0
   more progress than tradition: 10
   more world than nation: 10
 - question:
-    en: Governments should be accountable to the international community
-    ru: Правительства должны отвечать перед международным сообществом
+    en: Governments should be accountable to the international community?
+    ru: Правительства должны отвечать перед международным сообществом?
   more equality than markets: 0
   more liberty than authority: 5
   more progress than tradition: 0
   more world than nation: 10
 - question:
-    en: Even when protesting an authoritarian government, violence is not acceptable
-    ru: Даже в протесте против авторитарных режимов насилие недопустимо
+    en: Even when protesting an authoritarian government, violence is not acceptable?
+    ru: Даже в протесте против авторитарных режимов насилие недопустимо?
   more equality than markets: 0
   more liberty than authority: -5
   more progress than tradition: 0
   more world than nation: 5
 - question:
-    en: My religious values should be spread as much as possible
-    ru: Мои религиозные ценности должны быть распространены как можно шире
+    en: My religious values should be spread as much as possible?
+    ru: Мои религиозные ценности должны быть распространены как можно шире?
   more equality than markets: 0
   more liberty than authority: -10
   more progress than tradition: -10
   more world than nation: -5
 - question:
-    en: Our nation's values should be spread as much as possible
-    ru: Наши национальные ценности должны быть распространены как можно шире
+    en: Our nation's values should be spread as much as possible?
+    ru: Наши национальные ценности должны быть распространены как можно шире?
   more equality than markets: 0
   more liberty than authority: -5
   more progress than tradition: 0
   more world than nation: -10
 - question:
-    en: It is very important to maintain law and order
-    ru: Очень важно сохранять закон и порядок
+    en: It is very important to maintain law and order?
+    ru: Очень важно сохранять закон и порядок?
   more equality than markets: 0
   more liberty than authority: -10
   more progress than tradition: -5
   more world than nation: -5
 - question:
-    en: The general populace makes poor decisions
-    ru: Большинство населения принимает неверные решения
+    en: The general populace makes poor decisions?
+    ru: Большинство населения принимает неверные решения?
   more equality than markets: 0
   more liberty than authority: -10
   more progress than tradition: 0
   more world than nation: 0
 - question:
-    en: Physician-assisted suicide should be legal
+    en: Physician-assisted suicide should be legal?
     ru: Преступления без жертв (как употребление наркотиков) вообще не должны считаться
-      преступлениями
+      преступлениями?
   more equality than markets: 0
   more liberty than authority: 10
   more progress than tradition: 0
   more world than nation: 0
 - question:
     en: The sacrifice of some civil liberties is necessary to protect us from acts
-      of terrorism
-    ru: Ради защиты от терроризма можно пожертвовать некоторыми гражданскими свободами
+      of terrorism?
+    ru: Ради защиты от терроризма можно пожертвовать некоторыми гражданскими свободами?
   more equality than markets: 0
   more liberty than authority: -10
   more progress than tradition: 0
   more world than nation: 0
 - question:
-    en: Government surveillance is necessary in the modern world
-    ru: Слежка со стороны правительств необходима в современном обществе
+    en: Government surveillance is necessary in the modern world?
+    ru: Слежка со стороны правительств необходима в современном обществе?
   more equality than markets: 0
   more liberty than authority: -10
   more progress than tradition: 0
   more world than nation: 0
 - question:
-    en: The very existence of the state is a threat to our liberty
-    ru: Само существование государства - угроза нашей свободе
+    en: The very existence of the state is a threat to our liberty?
+    ru: Само существование государства - угроза нашей свободе?
   more equality than markets: 0
   more liberty than authority: 10
   more progress than tradition: 0
   more world than nation: 0
 - question:
-    en: Regardless of political opinions, it is important to side with your country
-    ru: Независимо от политических взглядов, важно быть на стороне своей страны
+    en: Regardless of political opinions, it is important to side with your country?
+    ru: Независимо от политических взглядов, важно быть на стороне своей страны?
   more equality than markets: 0
   more liberty than authority: -10
   more progress than tradition: -5
   more world than nation: -10
 - question:
-    en: All authority should be questioned
-    ru: Любая власть должна быть оспариваема
+    en: All authority should be questioned?
+    ru: Любая власть должна быть оспариваема?
   more equality than markets: 0
   more liberty than authority: 10
   more progress than tradition: 5
   more world than nation: 0
 - question:
-    en: A hierarchical state is best
-    ru: Иерархическое устройство - лучшее
+    en: A hierarchical state is best?
+    ru: Иерархическое устройство - лучшее?
   more equality than markets: 0
   more liberty than authority: -10
   more progress than tradition: 0
   more world than nation: 0
 - question:
     en: It is important that the government follows the majority opinion, even if
-      it is wrong
+      it is wrong?
     ru: Важно, чтобы государство придерживалось мнения большинства, даже если оно
-      неверное
+      неверное?
   more equality than markets: 0
   more liberty than authority: 10
   more progress than tradition: 0
   more world than nation: 0
 - question:
-    en: The stronger the leadership, the better
-    ru: Чем сильнее руководство, тем лучше
+    en: The stronger the leadership, the better?
+    ru: Чем сильнее руководство, тем лучше?
   more equality than markets: 0
   more liberty than authority: -10
   more progress than tradition: 0
   more world than nation: -10
 - question:
-    en: Democracy is more than a decision-making process
-    ru: Демократия - это большее, чем просто процесс принятия решений
+    en: Democracy is more than a decision-making process?
+    ru: Демократия - это большее, чем просто процесс принятия решений?
   more equality than markets: 0
   more liberty than authority: 10
   more progress than tradition: 0
   more world than nation: 0
 - question:
-    en: Environmental regulations are essential
-    ru: Экологические нормы необходимы
+    en: Environmental regulations are essential?
+    ru: Экологические нормы необходимы?
   more equality than markets: 5
   more liberty than authority: 0
   more progress than tradition: 10
   more world than nation: 0
 - question:
-    en: A better world will come from automation, science, and technology
-    ru: Лучший мир придёт путём автоматизации, научного и технологического прогресса
+    en: A better world will come from automation, science, and technology?
+    ru: Лучший мир придёт путём автоматизации, научного и технологического прогресса?
   more equality than markets: 0
   more liberty than authority: 0
   more progress than tradition: 10
   more world than nation: 0
 - question:
-    en: Children should be educated in religious or traditional values
-    ru: Дети должны воспитываться в традиционных или религиозных ценностях
+    en: Children should be educated in religious or traditional values?
+    ru: Дети должны воспитываться в традиционных или религиозных ценностях?
   more equality than markets: 0
   more liberty than authority: -5
   more progress than tradition: -10
   more world than nation: 0
 - question:
-    en: Traditions are of no value on their own
-    ru: Сами по себе традиции не имеют ценности
+    en: Traditions are of no value on their own?
+    ru: Сами по себе традиции не имеют ценности?
   more equality than markets: 0
   more liberty than authority: 0
   more progress than tradition: 10
   more world than nation: 0
 - question:
-    en: Religion should play a role in government
-    ru: Религия должна играть роль в государственном управлении
+    en: Religion should play a role in government?
+    ru: Религия должна играть роль в государственном управлении?
   more equality than markets: 0
   more liberty than authority: -10
   more progress than tradition: -10
   more world than nation: 0
 - question:
-    en: Churches should be taxed the same way other institutions are taxed
-    ru: Церкви должны облагаться такими же налогами, какими облагаются и другие институты
+    en: Churches should be taxed the same way other institutions are taxed?
+    ru: Церкви должны облагаться такими же налогами, какими облагаются и другие институты?
   more equality than markets: 5
   more liberty than authority: 0
   more progress than tradition: 10
   more world than nation: 0
 - question:
-    en: Climate change is currently one of the greatest threats to our way of life
-    ru: Климатические изменения - одна из самых больших угроз нашему образу жизни
+    en: Climate change is currently one of the greatest threats to our way of life?
+    ru: Климатические изменения - одна из самых больших угроз нашему образу жизни?
   more equality than markets: 0
   more liberty than authority: 0
   more progress than tradition: 10
   more world than nation: 0
 - question:
-    en: It is important that we work as a united world to combat climate change
-    ru: Мир должен объединиться в борьбе с климатическими изменениями
+    en: It is important that we work as a united world to combat climate change?
+    ru: Мир должен объединиться в борьбе с климатическими изменениями?
   more equality than markets: 0
   more liberty than authority: 0
   more progress than tradition: 10
   more world than nation: 10
 - question:
-    en: Society was better many years ago than it is now
-    ru: Общество было лучше много лет назад
+    en: Society was better many years ago than it is now?
+    ru: Общество было лучше много лет назад?
   more equality than markets: 0
   more liberty than authority: 0
   more progress than tradition: -10
   more world than nation: 0
 - question:
-    en: It is important that we maintain the traditions of our past
-    ru: Важно сохранить традиции прошлого
+    en: It is important that we maintain the traditions of our past?
+    ru: Важно сохранить традиции прошлого?
   more equality than markets: 0
   more liberty than authority: 0
   more progress than tradition: -10
   more world than nation: 0
 - question:
-    en: It is important that we think in the long term, beyond our lifespans
-    ru: Важно думать о будущем после наших жизней
+    en: It is important that we think in the long term, beyond our lifespans?
+    ru: Важно думать о будущем после наших жизней?
   more equality than markets: 0
   more liberty than authority: 0
   more progress than tradition: 10
   more world than nation: 0
 - question:
-    en: Reason is more important than maintaining our culture
-    ru: Ради реализации своих целей можно пожертвовать частью культуры
+    en: Reason is more important than maintaining our culture?
+    ru: Ради реализации своих целей можно пожертвовать частью культуры?
   more equality than markets: 0
   more liberty than authority: 0
   more progress than tradition: 10
   more world than nation: 0
 - question:
-    en: Drug use should be legalized or decriminalized
-    ru: Употребление наркотиков должно быть легализовано или декриминализовано
+    en: Drug use should be legalized or decriminalized?
+    ru: Употребление наркотиков должно быть легализовано или декриминализовано?
   more equality than markets: 0
   more liberty than authority: 10
   more progress than tradition: 2
   more world than nation: 0
 - question:
-    en: Same-sex marriage should be legal
-    ru: Однополые браки должны быть легализованы
+    en: Same-sex marriage should be legal?
+    ru: Однополые браки должны быть легализованы?
   more equality than markets: 0
   more liberty than authority: 10
   more progress than tradition: 10
   more world than nation: 0
 - question:
-    en: No cultures are superior to others
-    ru: Никакая культура не превосходит другую
+    en: No cultures are superior to others?
+    ru: Никакая культура не превосходит другую?
   more equality than markets: 0
   more liberty than authority: 5
   more progress than tradition: 10
   more world than nation: 10
 - question:
-    en: Sex outside marriage is immoral
-    ru: Секс вне брака аморален
+    en: Sex outside marriage is immoral?
+    ru: Секс вне брака аморален?
   more equality than markets: 0
   more liberty than authority: -5
   more progress than tradition: -10
   more world than nation: 0
 - question:
     en: If we accept migrants at all, it is important that they assimilate into our
-      culture
-    ru: Если мы вообще принимаем иммигрантов, важно их ассимилировать в нашу культуру
+      culture?
+    ru: Если мы вообще принимаем иммигрантов, важно их ассимилировать в нашу культуру?
   more equality than markets: 0
   more liberty than authority: -5
   more progress than tradition: -10
   more world than nation: 0
 - question:
-    en: Abortion should be prohibited in most or all cases
-    ru: Аборты должны быть запрещены в большинстве или во всех случаях
+    en: Abortion should be prohibited in most or all cases?
+    ru: Аборты должны быть запрещены в большинстве или во всех случаях?
   more equality than markets: 0
   more liberty than authority: -10
   more progress than tradition: -10
   more world than nation: 0
 - question:
-    en: Gun ownership should be prohibited for those without a valid reason
-    ru: Владение оружием должно быть запрещено тем, у кого нет веской причины
+    en: Gun ownership should be prohibited for those without a valid reason?
+    ru: Владение оружием должно быть запрещено тем, у кого нет веской причины?
   more equality than markets: 0
   more liberty than authority: -10
   more progress than tradition: 0
   more world than nation: 0
 - question:
-    en: I support single-payer, universal healthcare
-    ru: Я поддерживаю систему единоплательщика, общедоступную медицину
+    en: I support single-payer, universal healthcare?
+    ru: Я поддерживаю систему единоплательщика, общедоступную медицину?
   more equality than markets: 10
   more liberty than authority: 0
   more progress than tradition: 0
   more world than nation: 0
 - question:
-    en: Prostitution should be illegal
-    ru: Проституция должна быть нелегальной
+    en: Prostitution should be illegal?
+    ru: Проституция должна быть нелегальной?
   more equality than markets: 0
   more liberty than authority: -10
   more progress than tradition: -10
   more world than nation: 0
 - question:
-    en: Maintaining family values is essential
-    ru: Сохранение семейных ценностей имеет большое значение
+    en: Maintaining family values is essential?
+    ru: Сохранение семейных ценностей имеет большое значение?
   more equality than markets: 0
   more liberty than authority: 0
   more progress than tradition: -10
   more world than nation: 0
 - question:
-    en: To chase progress at all costs is dangerous
-    ru: Преследовать прогресс любой ценой опасно
+    en: To chase progress at all costs is dangerous?
+    ru: Преследовать прогресс любой ценой опасно?
   more equality than markets: 0
   more liberty than authority: 0
   more progress than tradition: -10
   more world than nation: 0
 - question:
-    en: Genetic modification is a force for good, even on humans
-    ru: Генетические модификации - добро, даже если производятся на людях
+    en: Genetic modification is a force for good, even on humans?
+    ru: Генетические модификации - добро, даже если производятся на людях?
   more equality than markets: 0
   more liberty than authority: 0
   more progress than tradition: 10
   more world than nation: 0
 - question:
-    en: We should open our borders to immigration
-    ru: Мы должны открыть наши границы иммигрантам
+    en: We should open our borders to immigration?
+    ru: Мы должны открыть наши границы иммигрантам?
   more equality than markets: 0
   more liberty than authority: 10
   more progress than tradition: 0
   more world than nation: 10
 - question:
     en: Governments should be as concerned about foreigners as they are about their
-      own citizens
+      own citizens?
     ru: Правительства должны быть так же обеспокоены иностранными гражданами, как
-      и теми, кто находится в их границах
+      и теми, кто находится в их границах?
   more equality than markets: 0
   more liberty than authority: 0
   more progress than tradition: 0
   more world than nation: 10
 - question:
     en: All people - regardless of factors like culture or sexuality - should be treated
-      equally
+      equally?
     ru: Все люди - независимо от таких факторов, как культура или сексуальная ориентация
-      - должны рассматриваться как равные
+      - должны рассматриваться как равные?
   more equality than markets: 10
   more liberty than authority: 10
   more progress than tradition: 10
   more world than nation: 10
 - question:
-    en: It is important that we further my group's goals above all others
-    ru: Важно ставить цели моей группы выше всех остальных
+    en: It is important that we further my group's goals above all others?
+    ru: Важно ставить цели моей группы выше всех остальных?
   more equality than markets: -10
   more liberty than authority: -10
   more progress than tradition: -10
