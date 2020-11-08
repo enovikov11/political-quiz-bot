@@ -1,7 +1,12 @@
-// https://core.telegram.org/bots/api
-// https://www.npmjs.com/package/node-fetch
-
 /*
+https://core.telegram.org/bots/api
+https://www.npmjs.com/package/node-fetch
+https://www.npmjs.com/package/puppeteer
+lsyncd
+
+sendPhoto chat_id photo caption
+{"ok":false,"error_code":429,"description":"Too Many Requests: retry after 3","parameters":{"retry_after":3}}
+
 Корнер кейсы:
 - много сообщений
 - пригласили в группу
