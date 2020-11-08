@@ -20,22 +20,11 @@ sendPhoto chat_id photo caption
 - Одно сообщение упало а другое нет
 */
 
-// FIXME выпилить debug
-const DEBUG_REDUCE_QUESTIONS = true;
-
 const fs = require('fs');
 const YAML = require('yaml');
 const fetch = require('node-fetch');
 
-const { questions, messages, buttons } = !DEBUG_REDUCE_QUESTIONS ? YAML.parse(fs.readFileSync('./quiz.yaml', 'utf8')) : (
-    () => {
-        const { questions, ...other } = YAML.parse(fs.readFileSync('./quiz.yaml', 'utf8'));
-        return {
-            questions: [questions[0], questions[1], questions[2], questions[3], questions[4]],
-            ...other
-        }
-    }
-)();
+const { questions, messages, buttons } = YAML.parse(fs.readFileSync('./quiz.yaml', 'utf8'));
 
 const api_base = process.env.QUIZBOT_API_BASE || "https://api.telegram.org/";
 const api_key = process.env.QUIZBOT_API_KEY;
