@@ -12,15 +12,26 @@
 - сеть потеряна
 - сеть флапает
 - пустой текст
-
-getCommands
+- Одно сообщение упало а другое нет
 */
+
+// FIXME выпилить debug
+const DEBUG_REDUCE_QUESTIONS = true;
 
 const fs = require('fs');
 const YAML = require('yaml');
 const fetch = require('node-fetch');
 
-const { questions, messages, buttons } = YAML.parse(fs.readFileSync('./quiz.yaml', 'utf8'))
+const { questions, messages, buttons } = !DEBUG_REDUCE_QUESTIONS ? YAML.parse(fs.readFileSync('./quiz.yaml', 'utf8')) : (
+    () => {
+        const { questions, ...other } = YAML.parse(fs.readFileSync('./quiz.yaml', 'utf8'));
+        return {
+            questions: [questions[0], questions[1], questions[2], questions[3], questions[4]],
+            ...other
+        }
+    }
+)();
+
 const api_base = process.env.QUIZBOT_API_BASE || "https://api.telegram.org/";
 const api_key = process.env.QUIZBOT_API_KEY;
 const locale = 'ru';
@@ -47,109 +58,133 @@ function fetch_api(method, data) {
     }).then(res => res.json());
 }
 
-async function on_update({ message, callback_query }) {
-    const chat_id = message?.chat?.id || callback_query?.message?.chat?.id;
-    if (!chat_id) {
-        throw new Error("no chat id");
+function chat_state(chat_id) {
+    return {
+        chat_id,
+        is_first_message: true,
+        is_our_audience: '',
+        current_question: 0,
+        answers: new Array(questions.length).fill(0),
+        random_mapper: new Array(questions.length).fill().map((_, i) => ({ random: Math.random(), i }))
+            .sort((a, b) => a.random > b.random ? 1 : -1).map(({ i }) => i),
+    };
+}
+
+async function on_update(state, { message, callback_query }) {
+    async function send_welcome() {
+        await fetch_api('sendMessage', {
+            chat_id: state.chat_id,
+            text: messages[locale].welcome,
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: buttons[locale]['is our audience'], callback_data: 'is our audience' }],
+                    [{ text: buttons[locale]['is not our audience'], callback_data: 'is not our audience' }]
+                ]
+            }
+        });
     }
-    if (!global_state.chats[chat_id]) {
-        global_state.chats[chat_id] = {
-            step: 'new',
-            questions_sent: 0,
-            answers: new Array(questions.length).fill(null),
-            random_mapper: new Array(questions.length).fill().map((_, i) => ({ random: Math.random(), i }))
-                .sort((a, b) => a.random > b.random ? 1 : -1).map(({ i }) => i),
-            is_our_audience: ''
-        };
-        global_state.users_count++;
+
+    async function confirm_callback(text) {
+        await fetch_api('answerCallbackQuery', { callback_query_id: callback_query.id, text });
+    }
+
+    async function send_results() {
+        await fetch_api('sendMessage', {
+            chat_id: state.chat_id,
+            text: JSON.stringify(state.answers),
+            inline_keyboard: [
+                [{ text: buttons[locale].restart, callback_data: 'restart' }]
+            ]
+        });
+    }
+
+    function make_question_text(number, answer) {
+        const text = `${messages[locale].question} ${number + 1} ${messages[locale]['question from']} ${questions.length}: ${questions[state.random_mapper[number]].question[locale]}`;
+        return answer === undefined ? text : text + `\n\n${messages[locale]['your answer']}: ${messages[locale][String(answer)]}`;
+    }
+
+    async function send_current_question_or_results({ show_restart_button = false } = {}) {
+        if (state.current_question === questions.length) {
+            await send_results();
+            return;
+        }
+
+        await fetch_api('sendMessage', {
+            chat_id: state.chat_id,
+            text: make_question_text(state.current_question),
+            reply_markup: {
+                inline_keyboard: [
+                    ['-1', '-0.5', '0', '0.5', '1'].map(effect => ({ text: buttons[locale][effect], callback_data: state.current_question + "|" + effect })),
+                    state.current_question > 0 && [{ text: buttons[locale].results, callback_data: 'results' }],
+                    show_restart_button && [{ text: buttons[locale].restart, callback_data: 'restart' }]
+                ].filter(Boolean)
+            }
+        });
+    }
+
+    async function edit_question(number, answer) {
+        await fetch_api('editMessageText', {
+            chat_id: state.chat_id,
+            text: make_question_text(number, answer),
+            message_id: callback_query?.message?.message_id,
+            reply_markup: {
+                inline_keyboard: [
+                    ['-1', '-0.5', '0', '0.5', '1'].map(effect => ({ text: buttons[locale][effect], callback_data: number + "|" + effect })),
+                    number > 0 && [{ text: buttons[locale].results, callback_data: 'results' }],
+                ].filter(Boolean)
+            }
+        });
     }
 
     try {
-        const state = global_state.chats[chat_id];
-        const is_first_message = state.step === 'new' || message?.text === '/start' || callback_query?.data === 'to begenning';
-        if (is_first_message) {
-            state.step = 'quiz_active';
-            state.questions_sent = 0;
-            await fetch_api('sendMessage', {
-                chat_id, text: messages[locale].welcome,
-                reply_markup: {
-                    inline_keyboard: [
-                        [{ text: buttons[locale]['is our audience'], callback_data: 'is our audience' }],
-                        [{ text: buttons[locale]['is not our audience'], callback_data: 'is not our audience' }]
-                    ]
-                }
-            });
+        if (state.is_first_message || message?.text === '/start') {
+            state.is_first_message = false;
+            state.current_question = 0;
+            await send_welcome(state);
+            await send_current_question_or_results();
         }
 
-        if (callback_query?.data && (callback_query?.data === 'is our audience' || callback_query?.data === 'is not our audience')) {
-            await fetch_api('answerCallbackQuery', { callback_query_id: callback_query.id, text: messages[locale].thanks });
-        } else if (callback_query?.data) {
-            await fetch_api('answerCallbackQuery', { callback_query_id: callback_query.id });
+        else if (message?.text) {
+            await send_current_question_or_results({ show_restart_button: true });
         }
 
-        if (callback_query?.data === 'is our audience') {
-            state.is_our_audience = 'yes'
-        } else if (callback_query?.data === 'is not our audience') {
-            state.is_our_audience = 'no'
-        } else if (callback_query?.data === 'results') {
-            await fetch_api('sendMessage', {
-                chat_id,
-                text: JSON.stringify(state.answers)
-            });
+        else if (callback_query?.data === 'restart') {
+            state.current_question = 0;
+            await confirm_callback();
+            await send_welcome(state);
+            await send_current_question_or_results();
         }
-        else if (state.step === 'quiz_active') {
-            const action_question_number = typeof callback_query?.data === 'string' ? +callback_query?.data.split('|', 2)[0] : NaN;
-            const action_answer = typeof callback_query?.data === 'string' ? +callback_query?.data.split('|', 2)[1] : NaN;
 
-            if (!isNaN(action_question_number) && !isNaN(action_answer) && action_question_number >= 0 &&
-                action_question_number < questions.length && [-1, -0.5, 0, 0.5, 1].includes(action_answer)) {
+        else if (callback_query?.data === 'is our audience') {
+            state.is_our_audience = 'yes';
+            await confirm_callback(messages[locale].thanks);
+        }
 
-                state.answers[action_question_number] = action_answer;
+        else if (callback_query?.data === 'is not our audience') {
+            state.is_our_audience = 'no';
+            await confirm_callback(messages[locale].thanks);
+        }
 
-                const question_number = action_question_number;
-                const question_pre_text = messages[locale].question + ' ' + (question_number + 1) + ' ' + messages[locale]['question from'] + ' ' + questions.length + ': ';
-                const question_text = questions[state.random_mapper[question_number]].question[locale];
-                const question_post_text = '\n\n' + messages[locale]['your answer'] + ': ' + messages[locale][String(action_answer)];
+        else if (callback_query?.data === 'results') {
+            await confirm_callback();
+            await send_results();
+        }
 
-                await fetch_api('editMessageText', {
-                    chat_id,
-                    text: question_pre_text + question_text + question_post_text,
-                    message_id: callback_query?.message?.message_id,
-                    reply_markup: {
-                        inline_keyboard: [
-                            ['-1', '-0.5', '0', '0.5', '1'].map(effect => ({ text: buttons[locale][effect], callback_data: question_number + "|" + effect })),
-                        ]
-                    }
-                });
-            }
+        else if (/^\d+\|(-1|-0\.5|0|0\.5|1)$/.test(callback_query?.data || "")) {
+            const [number, answer] = callback_query?.data.split('|', 2).map(n => +n);
 
-            if (message?.text || action_question_number + 1 === state.questions_sent) {
-                const question_number = state.questions_sent;
-                const question_pre_text = messages[locale].question + ' ' + (question_number + 1) + ' ' + messages[locale]['question from'] + ' ' + questions.length + ': ';
-                const question_text = questions[state.random_mapper[question_number]].question[locale];
+            await confirm_callback();
+            await edit_question(number, answer);
+            state.answers[number] = answer;
 
-                await fetch_api('sendMessage', {
-                    chat_id,
-                    text: question_pre_text + question_text,
-                    reply_markup: {
-                        inline_keyboard: [
-                            ['-1', '-0.5', '0', '0.5', '1'].map(effect => ({ text: buttons[locale][effect], callback_data: question_number + "|" + effect })),
-                            !is_first_message && [{ text: buttons[locale].results, callback_data: 'results' }],
-                            (!is_first_message && !!message?.text) && [{ text: buttons[locale]['to beginning'], callback_data: 'to beginning' }]
-                        ].filter(Boolean)
-                    }
-                });
-
-                state.questions_sent++;
-                if (state.questions_sent === questions.length) {
-                    state.step = 'end';
-                }
+            if (number === state.current_question) {
+                state.current_question++;
+                await send_current_question_or_results();
             }
         }
     } catch (e) {
         console.error(e);
-        await fetch_api('sendMessage', { chat_id, text: messages[locale].error });
-        return;
+        await fetch_api('sendMessage', { chat_id: state.chat_id, text: messages[locale].error });
     }
 }
 
@@ -185,9 +220,11 @@ async function main() {
 
                 if (!chats_chains[chat_id]) {
                     chats_chains[chat_id] = Promise.resolve();
+                    global_state.chats[chat_id] = chat_state(chat_id);
+                    global_state.users_count++;
                 }
 
-                chats_chains[chat_id].then(() => update).then(on_update).catch(console.error);
+                chats_chains[chat_id].then(on_update(global_state.chats[chat_id], update)).catch(console.error);
             }
         } catch (e) {
             console.error(e);
