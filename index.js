@@ -92,8 +92,6 @@ async function on_update({ message, callback_query }) {
         } else if (callback_query?.data === 'is not our audience') {
             state.is_our_audience = 'no'
         } else if (callback_query?.data === 'results') {
-            state.step = 'results';
-
             await fetch_api('sendMessage', {
                 chat_id,
                 text: JSON.stringify(state.answers)
