@@ -7,7 +7,10 @@ lsyncd
 sendPhoto chat_id photo caption
 {"ok":false,"error_code":429,"description":"Too Many Requests: retry after 3","parameters":{"retry_after":3}}
 
-Корнер кейсы:
+добавить отправку результатов
+сделать устойчивым к перезапуску
+
+Протестировать корнер кейсы:
 - много сообщений
 - пригласили в группу
 - пришло некорректное обновление
@@ -26,6 +29,7 @@ const fetch = require('node-fetch');
 
 const { questions, messages, buttons } = YAML.parse(fs.readFileSync('./quiz.yaml', 'utf8'));
 
+const base_dir = "/var/www/html";
 const api_base = process.env.QUIZBOT_API_BASE || "https://api.telegram.org/";
 const api_key = process.env.QUIZBOT_API_KEY;
 const locale = 'ru';
