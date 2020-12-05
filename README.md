@@ -9,5 +9,7 @@ apt upgrade
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.0/install.sh | bash
 nvm install 15.0.0
 nvm use 15.0.0
-apt install nginx tmux
+apt install -y nginx tmux git libvips-dev build-essential g++ make
 reboot now
+
+git clone git@github.com:enovikov11/political-quiz-bot.git

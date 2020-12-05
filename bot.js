@@ -1,13 +1,8 @@
 /*
 https://core.telegram.org/bots/api
-https://www.npmjs.com/package/node-fetch
-https://www.npmjs.com/package/sharp
-lsyncd
 
-sendPhoto chat_id photo caption
-{"ok":false,"error_code":429,"description":"Too Many Requests: retry after 3","parameters":{"retry_after":3}}
+ETIMEDOUT
 
-добавить отправку результатов
 сделать устойчивым к перезапуску
 
 Протестировать корнер кейсы:
@@ -26,8 +21,11 @@ sendPhoto chat_id photo caption
 const fs = require('fs');
 const YAML = require('yaml');
 const fetch = require('node-fetch');
+const puppeteer = require('puppeteer');
+const clusterPlot = require('cluster-plot');
 
 const { questions, messages, buttons } = YAML.parse(fs.readFileSync('./quiz.yaml', 'utf8'));
+const html = fs.readFileSync('./results.html', 'utf-8');
 
 const base_dir = "/var/www/html";
 const api_base = process.env.QUIZBOT_API_BASE || "https://api.telegram.org/";
@@ -36,7 +34,7 @@ const locale = 'ru';
 const UPDATE_ERROR_WAIT = 100;
 const UPDATE_MAX_ERRORS = 100;
 const UPDATE_POLLING_INTERVAL = '60';
-const STATS_INACTIVE_WAIT = 5 * 60;
+const REBUILD_RESULTS_INTERVAL = 1000;
 
 let offset = 0;
 let update_errors_count = 0;
@@ -60,7 +58,6 @@ function chat_state(chat_id) {
     return {
         chat_id,
         is_first_message: true,
-        is_our_audience: '',
         current_question: 0,
         answers: new Array(questions.length).fill(0),
         random_mapper: new Array(questions.length).fill().map((_, i) => ({ random: Math.random(), i }))
@@ -72,28 +69,12 @@ async function on_update(state, { message, callback_query }) {
     async function send_welcome() {
         await fetch_api('sendMessage', {
             chat_id: state.chat_id,
-            text: messages[locale].welcome,
-            reply_markup: {
-                inline_keyboard: [
-                    [{ text: buttons[locale]['is our audience'], callback_data: 'is our audience' }],
-                    [{ text: buttons[locale]['is not our audience'], callback_data: 'is not our audience' }]
-                ]
-            }
+            text: messages[locale].welcome
         });
     }
 
     async function confirm_callback(text) {
         await fetch_api('answerCallbackQuery', { callback_query_id: callback_query.id, text });
-    }
-
-    async function send_results() {
-        await fetch_api('sendMessage', {
-            chat_id: state.chat_id,
-            text: JSON.stringify(state.answers),
-            inline_keyboard: [
-                [{ text: buttons[locale].restart, callback_data: 'restart' }]
-            ]
-        });
     }
 
     function make_question_text(number, answer) {
@@ -103,7 +84,10 @@ async function on_update(state, { message, callback_query }) {
 
     async function send_current_question_or_results({ show_restart_button = false } = {}) {
         if (state.current_question === questions.length) {
-            await send_results();
+            await fetch_api('sendMessage', {
+                chat_id: state.chat_id,
+                text: "Тест пройден, спасибо"
+            });
             return;
         }
 
@@ -113,7 +97,6 @@ async function on_update(state, { message, callback_query }) {
             reply_markup: {
                 inline_keyboard: [
                     ['-1', '-0.5', '0', '0.5', '1'].map(effect => ({ text: buttons[locale][effect], callback_data: state.current_question + "|" + effect })),
-                    state.current_question > 0 && [{ text: buttons[locale].results, callback_data: 'results' }],
                     show_restart_button && [{ text: buttons[locale].restart, callback_data: 'restart' }]
                 ].filter(Boolean)
             }
@@ -128,7 +111,6 @@ async function on_update(state, { message, callback_query }) {
             reply_markup: {
                 inline_keyboard: [
                     ['-1', '-0.5', '0', '0.5', '1'].map(effect => ({ text: buttons[locale][effect], callback_data: number + "|" + effect })),
-                    number > 0 && [{ text: buttons[locale].results, callback_data: 'results' }],
                 ].filter(Boolean)
             }
         });
@@ -153,21 +135,6 @@ async function on_update(state, { message, callback_query }) {
             await send_current_question_or_results();
         }
 
-        else if (callback_query?.data === 'is our audience') {
-            state.is_our_audience = 'yes';
-            await confirm_callback(messages[locale].thanks);
-        }
-
-        else if (callback_query?.data === 'is not our audience') {
-            state.is_our_audience = 'no';
-            await confirm_callback(messages[locale].thanks);
-        }
-
-        else if (callback_query?.data === 'results') {
-            await confirm_callback();
-            await send_results();
-        }
-
         else if (/^\d+\|(-1|-0\.5|0|0\.5|1)$/.test(callback_query?.data || "")) {
             const [number, answer] = callback_query?.data.split('|', 2).map(n => +n);
 
@@ -186,7 +153,91 @@ async function on_update(state, { message, callback_query }) {
     }
 }
 
+function calc_user({ answers, random_mapper, current_question }) {
+    const result = {
+        "more equality than markets": { value: 0, max: 0 },
+        "more liberty than authority": { value: 0, max: 0 },
+        "more progress than tradition": { value: 0, max: 0 },
+        "more world than nation": { value: 0, max: 0 }
+    }, count = Math.min(questions.length, current_question);
+
+    for (let i = 0; i < count; i++) {
+        const question = questions[random_mapper[i]];
+        const answer = answers[i];
+
+        result["more equality than markets"].value += answer * question["more equality than markets"];
+        result["more equality than markets"].max += Math.abs(question["more equality than markets"]);
+
+        result["more liberty than authority"].value += answer * question["more liberty than authority"];
+        result["more liberty than authority"].max += Math.abs(question["more liberty than authority"]);
+
+        result["more progress than tradition"].value += answer * question["more progress than tradition"];
+        result["more progress than tradition"].max += Math.abs(question["more progress than tradition"]);
+
+        result["more world than nation"].value += answer * question["more world than nation"];
+        result["more world than nation"].max += Math.abs(question["more world than nation"]);
+    }
+
+    return result;
+}
+
+async function update(browser, data) {
+    const clusters = clusterPlot(data), page = await browser.newPage();
+
+    await page.setViewport({ width: 1920, height: 1080 });
+    await page.setContent(html);
+    await page.setViewport({ width: 1920, height: 1080 });
+    await page.evaluate(async (clusters) => {
+        document.querySelector('mask#quizresults').innerHTML = clusters.map(({ x, y, r }) => `<circle cx="${(x - 0.5) * 600}" cy="${(y - 0.5) * 600}" r="${r * 600}" fill="white" />`).join('');
+
+        const divs = clusters.map(({ count, r, x, y }) => {
+            const div = document.createElement('div');
+
+            div.style.position = 'fixed';
+            div.style.left = '0px';
+            div.style.top = '0px';
+            div.style.fontSize = '300px';
+            div.innerText = count;
+            document.body.appendChild(div);
+            return { count, r, x, y, div };
+        });
+
+        await new Promise(res => setTimeout(res, 100));
+
+        divs.map(({ count, r, x, y, div }) => {
+            const { width, height } = div.getBoundingClientRect(), realDiagonal = Math.sqrt(width ** 2 + height ** 2),
+                needDiagonal = 1200 * r, scale = needDiagonal / realDiagonal;
+            div.style.fontSize = (300 * scale) + "px";
+            div.style.left = (966 + (x - 0.5) * 600 - width * scale / 2) + "px";
+            div.style.top = (519 + (y - 0.5) * 600 - height * scale / 2) + "px";
+        });
+    }, clusters);
+    await page.screenshot({ path: 'results.png', omitBackground: true });
+    await page.close();
+}
+
 async function main() {
+    const browser = await puppeteer.launch();
+
+    setInterval(() => {
+        const data = Object.values(global_state.chats).map(calc_user).map(
+            result => {
+                if (result["more equality than markets"].max === 0 || result["more liberty than authority"].max === 0) {
+                    return null;
+                }
+
+                return [
+                    (1 + -1 * result["more equality than markets"].value / result["more equality than markets"].max) / 2,
+                    (1 + -1 * result["more liberty than authority"].value / result["more liberty than authority"].max) / 2
+                ];
+            }
+        ).filter(Boolean);
+
+        update(browser, data)
+
+        fs.writeFileSync('debug.temp.json', JSON.stringify({ global_state, data, results: Object.values(global_state.chats).map(calc_user) }));
+    }, REBUILD_RESULTS_INTERVAL);
+
     if (questions.some(question => [
         "more equality than markets",
         "more liberty than authority",
@@ -233,6 +284,8 @@ async function main() {
             await new Promise(res => setTimeout(res, UPDATE_ERROR_WAIT));
         }
     }
+
+    await browser.close();
 }
 
 main().catch(console.error)

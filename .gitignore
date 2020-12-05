@@ -1,5 +1,5 @@
+.DS_Store
 node_modules
 *.log
 *.temp.json
-.DS_Store
-temp
+results.png
