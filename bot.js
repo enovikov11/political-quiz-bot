@@ -1,7 +1,7 @@
 /*
 https://core.telegram.org/bots/api
 https://www.npmjs.com/package/node-fetch
-https://www.npmjs.com/package/puppeteer
+https://www.npmjs.com/package/sharp
 lsyncd
 
 sendPhoto chat_id photo caption
