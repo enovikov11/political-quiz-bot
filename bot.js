@@ -1,11 +1,4 @@
 /*
-https://core.telegram.org/bots/api
-
-ETIMEDOUT
-
-сделать устойчивым к перезапуску
-
-Протестировать корнер кейсы:
 - много сообщений
 - пригласили в группу
 - пришло некорректное обновление
@@ -26,9 +19,10 @@ const clusterPlot = require('cluster-plot');
 
 const { questions, messages, buttons } = YAML.parse(fs.readFileSync('./quiz.yaml', 'utf8'));
 const html = fs.readFileSync('./results.html', 'utf-8');
+const messages_log_fd = fs.openSync('./messages.json.log', 'a');
 
-const base_dir = "/var/www/html";
-const api_base = process.env.QUIZBOT_API_BASE || "https://api.telegram.org/";
+const base_dir = "/var/www/html/";
+const api_base = process.env.QUIZBOT_API_BASE || "https://api.telegram.org/"; // https://core.telegram.org/bots/api
 const api_key = process.env.QUIZBOT_API_KEY;
 const locale = 'ru';
 const UPDATE_ERROR_WAIT = 100;
@@ -39,19 +33,45 @@ const REBUILD_RESULTS_INTERVAL = 1000;
 let offset = 0;
 let update_errors_count = 0;
 let chats_chains = {};
+let messages_chain = Promise.resolve();
 
 let global_state = {
     users_count: 0,
     chats: {}
 }
 
-// FIXME retry + throw error
-function fetch_api(method, data) {
-    return fetch(api_base + 'bot' + api_key + '/' + method, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: { 'Content-Type': 'application/json' }
-    }).then(res => res.json());
+function log_message(object) {
+    messages_chain.then(new Promise(res => {
+        fs.appendFile(messages_log_fd, JSON.stringify(object) + '\n', res);
+    }));
+}
+
+async function fetch_api(method, data) {
+    log_message({ out: [method, data] });
+
+    try {
+        const result = await fetch(api_base + 'bot' + api_key + '/' + method, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: { 'Content-Type': 'application/json' }
+        }).then(res => res.json());
+
+        if (!result.ok) {
+            throw new Error('not ok');
+        }
+
+        return result;
+    } catch (e) {
+        const result = await fetch(api_base + 'bot' + api_key + '/' + method, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: { 'Content-Type': 'application/json' }
+        }).then(res => res.json());
+
+        if (result.ok) {
+            return result;
+        }
+    }
 }
 
 function chat_state(chat_id) {
@@ -212,14 +232,22 @@ async function update(browser, data) {
             div.style.top = (519 + (y - 0.5) * 600 - height * scale / 2) + "px";
         });
     }, clusters);
-    await page.screenshot({ path: 'results.png', omitBackground: true });
+    await page.screenshot({ path: base_dir + 'results.png', omitBackground: true });
     await page.close();
 }
 
 async function main() {
     const browser = await puppeteer.launch();
 
+    try {
+        global_state = JSON.parse(fs.readFileSync('./state.json.log', 'utf-8'));
+    } catch (e) {
+        console.error(e);
+    }
+
     setInterval(() => {
+        fs.writeFileSync('./state.json.log', JSON.stringify(global_state));
+
         const data = Object.values(global_state.chats).map(calc_user).map(
             result => {
                 if (result["more equality than markets"].max === 0 || result["more liberty than authority"].max === 0) {
@@ -235,7 +263,7 @@ async function main() {
 
         update(browser, data)
 
-        fs.writeFileSync('debug.temp.json', JSON.stringify({ global_state, data, results: Object.values(global_state.chats).map(calc_user) }));
+        // fs.writeFileSync('debug.temp.json', JSON.stringify({ global_state, data, results: Object.values(global_state.chats).map(calc_user) }));
     }, REBUILD_RESULTS_INTERVAL);
 
     if (questions.some(question => [
@@ -262,6 +290,9 @@ async function main() {
 
             for (let i = 0; i < updates_result.result.length; i++) {
                 let update = updates_result.result[i];
+
+                log_message({ in: update });
+
                 let chat_id = update?.message?.chat?.id || update?.callback_query?.message?.chat?.id;
                 if (!chat_id) {
                     console.error(JSON.stringify({ error: "bad_update", update }));
@@ -269,6 +300,9 @@ async function main() {
 
                 if (!chats_chains[chat_id]) {
                     chats_chains[chat_id] = Promise.resolve();
+                }
+
+                if (!global_state.chats[chat_id]) {
                     global_state.chats[chat_id] = chat_state(chat_id);
                     global_state.users_count++;
                 }
