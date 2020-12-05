@@ -238,7 +238,7 @@ async function update(browser, data) {
 }
 
 async function main() {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
 
     try {
         global_state = JSON.parse(fs.readFileSync('./state.json.log', 'utf-8'));
