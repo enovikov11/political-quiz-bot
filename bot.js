@@ -1,4 +1,5 @@
 /*
+Проверять:
 - много сообщений
 - пригласили в группу
 - пришло некорректное обновление
@@ -8,7 +9,7 @@
 - сеть потеряна
 - сеть флапает
 - пустой текст
-- Одно сообщение упало а другое нет
+- одно сообщение упало а другое нет
 */
 
 const fs = require('fs');
@@ -21,7 +22,7 @@ const { questions, messages, buttons } = YAML.parse(fs.readFileSync('./quiz.yaml
 const html = fs.readFileSync('./results.html', 'utf-8');
 const messages_log_fd = fs.openSync('./messages.json.log', 'a');
 
-const base_dir = "/var/www/html/";
+const base_dir = process.env.QUIZBOT_BASE_DIR || './'; // "/var/www/html/"
 const api_base = process.env.QUIZBOT_API_BASE || "https://api.telegram.org/"; // https://core.telegram.org/bots/api
 const api_key = process.env.QUIZBOT_API_KEY;
 const locale = 'ru';
