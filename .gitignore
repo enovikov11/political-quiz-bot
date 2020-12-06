@@ -2,3 +2,4 @@
 node_modules
 api.log
 db.sqlite
+clusters.json

@@ -1,7 +1,7 @@
 const fs = require('fs');
 const YAML = require('yaml');
 
-const { questions, messages, buttons } = YAML.parse(fs.readFileSync('./res/quiz.yaml', 'utf8'));
+const { questions, messages, buttons } = require('./lib');
 const locale = 'ru';
 
 function send_welcome(calls, id) {

@@ -16,6 +16,7 @@ ln -s /snap/bin/certbot /usr/bin/certbot
 certbot --nginx
 reboot now
 git clone https://github.com/enovikov11/political-quiz-bot.git
+rm /var/www/html/index.nginx-debian.html
 cp ./res/www-index.html /var/www/html/index.html
 cp ./res/Jost-SemiBold.ttf /var/www/html/Jost-SemiBold.ttf
 
