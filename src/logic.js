@@ -3,6 +3,8 @@ const YAML = require('yaml');
 
 const { questions, messages, buttons } = require('./lib');
 const locale = 'ru';
+const { calc } = require('./results');
+const baseUrl = process.env.QUIZBOT_BASE_URL;
 
 function send_welcome(calls, id) {
     calls.push(['sendMessage', { chat_id: id, text: messages[locale].welcome }]);
@@ -14,9 +16,21 @@ function make_question_text(state, number, answer) {
 }
 
 function send_current_question(calls, id, state, { show_restart_button = false } = {}) {
-    calls.push(['sendMessage', state.current_question === questions.length ?
-        { chat_id: id, text: messages[locale].complete } :
-        {
+    if (state.current_question === questions.length) {
+        const result = calc(state);
+        calls.push(['sendMessage',
+            { chat_id: id, text: messages[locale].description }
+        ]);
+        if (result) {
+            calls.push(['sendMessage',
+                { chat_id: id, text: `Твой результат на ${Math.round((1 - result[0]) * 100)}% за Равенство и на ${Math.round(result[0] * 100)}% за Рынки, на ${Math.round((1 - result[1]) * 100)}% за Власть и на ${Math.round(result[1] * 100)}% за Свободу` }
+            ]);
+            calls.push(['sendPhoto',
+                { chat_id: id, photo: baseUrl + "static/" + Math.floor(result[0] * 30) + "-" + Math.floor(result[1] * 30) + ".png" }
+            ]);
+        }
+    } else {
+        calls.push(['sendMessage', {
             chat_id: id,
             text: make_question_text(state, state.current_question),
             reply_markup: {
@@ -26,7 +40,8 @@ function send_current_question(calls, id, state, { show_restart_button = false }
                 ].filter(Boolean)
             }
         }
-    ]);
+        ]);
+    }
 }
 
 async function confirm_callback(calls, id) {
