@@ -19,7 +19,7 @@ const { process } = require('./logic');
 const { update } = require('./results');
 
 const UPDATE_POLLING_INTERVAL = '60';
-const REBUILD_RESULTS_INTERVAL = 1000;
+const REBUILD_RESULTS_INTERVAL = 30000;
 
 (async () => {
     await initStorage();

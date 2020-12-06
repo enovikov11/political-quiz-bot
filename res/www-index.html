@@ -241,7 +241,7 @@
 
         const update = () => fetch('./clusters.json').then(res => res.json()).then(reset);
 
-        setInterval(update, 5000);
+        setInterval(update, 10000);
         update();
     </script>
 </body>
