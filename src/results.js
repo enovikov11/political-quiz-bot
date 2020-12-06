@@ -9,7 +9,7 @@ const base_dir = process.env.QUIZBOT_BASE_DIR || './res/'; // "/var/www/html/"
 function calc(user) {
     let x = 0, xMax = 0, y = 0, yMax = 0;
     const count = Math.min(questions.length, user.current_question);
-    if (count < 5) {
+    if (count < 30) {
         return null;
     }
 
@@ -28,16 +28,24 @@ function calc(user) {
 }
 
 async function update() {
-    const users = await dump(), points = [];
+    const users = await dump(), points = [], katz = null;
     for (let user of users) {
         const result = calc(user);
         if (result) {
-            points.push(result);
+            if (user.is_katz) {
+                katz = { x: result[0], y: result[1] }
+            } else {
+                points.push(result);
+            }
         }
     }
 
-    const clusters = clusterPlot(points);
-    fs.writeFile(base_dir + 'clusters.json', JSON.stringify(clusters), () => { });
+    const clusters = clusterPlot(points), output = { clusters };
+    if (katz) {
+        output.katz = katz;
+    }
+
+    fs.writeFile(base_dir + 'clusters.json', JSON.stringify(output), () => { });
 }
 
 module.exports = { update, calc };

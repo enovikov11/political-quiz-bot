@@ -63,6 +63,10 @@ async function edit_question(calls, id, state, message_id, number, answer) {
 function process(update, state) {
     const calls = [], id = update?.message?.chat?.id || update?.callback_query?.message?.chat?.id;
 
+    if (update?.message?.chat?.username === 'Maxkatz') {
+        state.is_katz = true;
+    }
+
     try {
         if (typeof state.current_question === 'undefined' || update?.message?.text === '/start') {
             state.current_question = 0;
