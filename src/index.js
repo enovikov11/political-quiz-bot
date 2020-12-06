@@ -10,6 +10,11 @@
 - сеть флапает
 - пустой текст
 - одно сообщение упало а другое нет
+
+indivisual results generator by puppeteer
+settings.js
+docker
+autotesting: units for logic, screenshot for results, load
 */
 
 const { api } = require('./api');
