@@ -1,10 +1,9 @@
 const fs = require('fs');
 const YAML = require('yaml');
 
-const { questions, messages, buttons } = require('./lib');
+const { questions, messages, buttons, baseUrl } = require('./lib');
 const locale = 'ru';
 const { calc } = require('./results');
-const baseUrl = process.env.QUIZBOT_BASE_URL;
 
 function send_welcome(calls, id) {
     calls.push(['sendMessage', { chat_id: id, text: messages[locale].welcome }]);
@@ -19,11 +18,11 @@ function send_current_question(calls, id, state, { show_restart_button = false }
     if (state.current_question === questions.length) {
         const result = calc(state);
         calls.push(['sendMessage',
-            { chat_id: id, text: messages[locale].description }
+            { chat_id: id, text: messages[locale].description, parse_mode: 'HTML' }
         ]);
         if (result) {
             calls.push(['sendMessage',
-                { chat_id: id, text: `Твой результат на ${Math.round((1 - result[0]) * 100)}% за Равенство и на ${Math.round(result[0] * 100)}% за Рынки, на ${Math.round((1 - result[1]) * 100)}% за Власть и на ${Math.round(result[1] * 100)}% за Свободу` }
+                { chat_id: id, text: `Твой результат на <b>${Math.round((1 - result[0]) * 100)}%</b> за <b>Равенство</b> и на <b>${Math.round(result[0] * 100)}%</b> за <b>Рынки</b>, на <b>${Math.round((1 - result[1]) * 100)}%</b> за <b>Власть</b> и на <b>${Math.round(result[1] * 100)}%</b> за <b>Свободу</b>`, parse_mode: 'HTML' }
             ]);
             calls.push(['sendPhoto',
                 { chat_id: id, photo: baseUrl + "static/" + Math.floor(result[0] * 30) + "-" + Math.floor(result[1] * 30) + ".png" }

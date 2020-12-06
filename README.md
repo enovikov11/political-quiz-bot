@@ -24,7 +24,7 @@ npm start
 
 export QUIZBOT_API_KEY=""
 export QUIZBOT_BASE_DIR="/var/www/html/"
-QUIZBOT_BASE_URL="https://host/"
+export QUIZBOT_BASE_URL="https://host/"
 
 ssh max mkdir /var/www/html/static  
 scp -r ./res/static max:/var/www/html

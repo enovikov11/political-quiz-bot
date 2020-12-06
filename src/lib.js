@@ -16,4 +16,4 @@ function getConfig() {
     return data;
 }
 
-module.exports = { run, questions: questions.filter(q => q['more equality than markets'] !== 0 || q["more liberty than authority"] !== 0), messages, buttons };
+module.exports = { run, questions: questions.filter(q => q['more equality than markets'] !== 0 || q["more liberty than authority"] !== 0), messages, buttons, baseUrl: process.env.QUIZBOT_BASE_URL };

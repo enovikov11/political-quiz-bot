@@ -14,7 +14,7 @@
             font-family: 'Jost';
             color: white;
 
-            background-color: grey;
+            /* background-color: grey; */
         }
 
         #tester {
@@ -30,11 +30,35 @@
             left: 966px;
             top: 519px;
         }
+
+        h1,
+        h2,
+        h4 {
+            position: fixed;
+            z-index: 100;
+            background-color: grey;
+        }
+
+        h1 {
+            font-size: 70px;
+            padding: 15px;
+        }
+
+        h4 {
+            font-size: 30px;
+            padding: 10px;
+        }
     </style>
 
 </head>
 
 <body>
+    <h1 style="top: 20px;left: 20px">Пишите в телеграм боту</h1>
+    <h1 style="top: 152px;left: 20px">@max_katz_bot</h1>
+    <h4 style="top: 700px;left: 20px">Запрогал Евгений Новиков</h4>
+    <h4 style="top: 767px;left: 20px">github.com/enovikov11</h4>
+    <h4 style="top: 900px;left: 20px">Основано на тесте 8values</h4>
+
     <svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
         <line x1="571.615" y1="519.78" x2="1365.14" y2="519.78" stroke="white" stroke-width="4" />
         <line x1="966.377" y1="873.303" x2="966.377" y2="159.613" stroke="white" stroke-width="4" />
@@ -203,12 +227,6 @@
             </filter>
         </defs>
     </svg>
-
-
-    <div style="position: fixed;font-size: 70px;left: 40px;top: 40px;z-index: 100;width: 800px;">Пишите в телеграм боту
-        @max_katz_bot</div>
-    <div style="position: fixed;font-size: 30px;left: 40px;top: 300px;z-index: 100;width: 600px;">Запрогал Евгений
-        Новиков<br /> github.com/enovikov11<br /><br />Основано на тесте 8values</div>
     <div id="texts"></div>
     <div id="tester"></div>
     <script>

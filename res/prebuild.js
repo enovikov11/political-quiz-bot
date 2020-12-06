@@ -16,7 +16,5 @@
         }
     }
 
-
-
     await browser.close();
 })();
