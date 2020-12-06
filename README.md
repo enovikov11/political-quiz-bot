@@ -12,9 +12,7 @@ apt install -y nginx tmux git build-essential g++ make
 snap install core
 snap refresh core
 snap install --classic certbot
-ln -s /snap/bin/certbot /usr/bin/certbot
 certbot --nginx
-reboot now
 git clone https://github.com/enovikov11/political-quiz-bot.git
 rm /var/www/html/index.nginx-debian.html
 cp ./res/www-index.html /var/www/html/index.html

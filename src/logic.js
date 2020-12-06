@@ -44,7 +44,7 @@ function send_current_question(calls, id, state, { show_restart_button = false }
 }
 
 async function confirm_callback(calls, id) {
-    calls.push(['answerCallbackQuery', { callback_query_id: id, text: "" }]);
+    calls.push(['answerCallbackQuery', { callback_query_id: id }]);
 }
 
 async function edit_question(calls, id, state, message_id, number, answer) {
@@ -80,7 +80,7 @@ function process(update, state) {
 
         else if (update?.callback_query?.data === 'restart') {
             state.current_question = 0;
-            confirm_callback(calls, id);
+            confirm_callback(calls, update?.callback_query?.id);
             send_welcome(calls, id);
             send_current_question(calls, id, state);
         }
@@ -88,7 +88,7 @@ function process(update, state) {
         else if (/^\d+\|(-1|-0\.5|0|0\.5|1)$/.test(update?.callback_query?.data || "")) {
             const [number, answer] = update?.callback_query?.data.split('|', 2).map(n => +n);
 
-            confirm_callback(calls, id);
+            confirm_callback(calls, update?.callback_query?.id);
             edit_question(calls, id, state, update?.callback_query?.message?.message_id, number, answer);
             state.answers[number] = answer;
 
