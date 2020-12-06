@@ -1,5 +1,4 @@
 .DS_Store
 node_modules
-*.log
-*.temp.json
-results.png
+api.log
+db.sqlite
