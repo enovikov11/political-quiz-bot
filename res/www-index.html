@@ -266,6 +266,8 @@
                 return `<div style="font-size:${font}px;position:absolute;left:${left}px;top:${top}px">${count}</div>`
             };
 
+        katzImg.style.display = 'none';
+
         function getSize(text) {
             tester.innerText = text;
             const { width, height } = tester.getBoundingClientRect();

@@ -28,7 +28,8 @@ function calc(user) {
 }
 
 async function update() {
-    const users = await dump(), points = [], katz = null;
+    const users = await dump(), points = [];
+    let katz = null;
     for (let user of users) {
         const result = calc(user);
         if (result) {
