@@ -215,20 +215,36 @@
     <span class="message-small">Запрогал Евгений Новиков github.com/enovikov11 Основано на тесте 8values</span>
     <span class="message-count"></span>
     <script>
-        const katz = document.querySelector('.katz'), resultsData = document.querySelector('.results-data');
+        const katz = document.querySelector('.katz'), resultsData = document.querySelector('.results-data'),
+            messageCount = document.querySelector('.message-count'), dataCircles = document.querySelector('#data-circles'),
+            results = document.querySelector('.results');
         katz.style.display = 'none';
 
         function set(data) {
-            if (data.messages) { } else if (data.points) {
-                const count = data.points.length, size = count < 1000 ? 1 / (30 + Math.log10(count) * 10) : Math.sqrt(1000 / count) / 60;
-                document.querySelector('.message-count').innerText = 'Ответов: ' + data.points.length.toLocaleString();
-                document.querySelector('#data-circles').innerHTML =
+            if (data.messages) {
+                results.style.display = 'none';
+                messageCount.innerText = '';
+            } else if (data.points) {
+                const count = data.points.length, size = 1 / (35 + Math.log10(Math.min(1600, count)) * 10), quadrants = {},
+                    filteredPoints = count < 1600 ? data.points : data.points.filter(([x, y]) => {
+                        const id = 40 * Math.floor((40 - 1e-10) * x) + Math.floor((40 - 1e-10) * y);
+                        quadrants[id] = (quadrants[id] || 0) + 1;
+                        return quadrants[id] < 2;
+                    });
+
+                results.style.display = '';
+                messageCount.innerText = 'Ответов: ' + count.toLocaleString();
+
+                dataCircles.innerHTML =
                     [[0, 0], [1, 0], [0, 1], [1, 1]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="0.01" transform="scale(1000)" fill="white"/>`) +
-                    data.points.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${size}" transform="scale(1000)" fill="white"/>`);
+                    filteredPoints.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${size}" transform="scale(1000)" fill="white"/>`);
             }
         }
 
         const drawRandom = count => set({ points: new Array(count).fill().map(() => ([Math.random(), Math.random()])) });
+
+
+
 
 
         // if (data.katz) {
