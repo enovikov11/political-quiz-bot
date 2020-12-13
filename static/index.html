@@ -6,7 +6,7 @@
     <style>
         @font-face {
             font-family: 'Jost';
-            src: url('Jost-SemiBold.ttf');
+            src: url('./Jost-SemiBold.ttf');
         }
 
         body {
@@ -16,14 +16,7 @@
             margin: 0;
             font-family: 'Jost';
             color: white;
-        }
-
-        .font-probe {
-            visibility: hidden;
-            font-size: 100px;
-            position: fixed;
-            top: 0;
-            left: 0;
+            background-color: lightgray;
         }
 
         .results {
@@ -99,32 +92,41 @@
 
         .message-big {
             position: absolute;
+            background-color: grey;
             top: 0;
             right: 0;
             font-size: 60px;
             padding: 0 15px;
             font-weight: bold;
+        }
+
+        .message-count {
+            position: absolute;
             background-color: grey;
+            left: 0;
+            top: 0;
+            font-size: 45px;
+            padding: 0 10px;
+            font-weight: bold;
         }
 
         .message-small {
             position: absolute;
+            background-color: grey;
             bottom: 0;
             right: 0;
             font-size: 30px;
             padding: 0 5px;
-            background-color: grey;
         }
     </style>
 </head>
 
 <body>
-    <div class="font-probe"></div>
     <div class="results">
         <div class="results-data">
             <svg width="1000" height="1000" viewBox="0 0 1000 1000" class="results-data-svg">
-                <line x1="0" y1="500" x2="1000" y2="500" stroke="white" stroke-width="4" />
-                <line x1="500" y1="0" x2="500" y2="1000" stroke="white" stroke-width="4" />
+                <line x1="0" y1="498" x2="1000" y2="498" stroke="white" stroke-width="4" />
+                <line x1="498" y1="0" x2="498" y2="1000" stroke="white" stroke-width="4" />
 
                 <mask id="data-circles" />
 
@@ -135,7 +137,6 @@
                     <rect x="500" y="500" width="500" height="500" fill="#DD2FFD" />
                 </g>
             </svg>
-            <div class="results-data-counters"></div>
             <img src="katz.png" class="katz" />
         </div>
         <div class="results-top results-item">
@@ -210,44 +211,41 @@
             </svg>
         </div>
     </div>
-    <div class="message-big">Пишите в телеграм боту @max_katz_bot</div>
-    <div class="message-small">Запрогал Евгений Новиков github.com/enovikov11 Основано на тесте 8values</div>
+    <span class="message-big">Пишите в телеграм боту @max_katz_bot</span>
+    <span class="message-small">Запрогал Евгений Новиков github.com/enovikov11 Основано на тесте 8values</span>
+    <span class="message-count"></span>
     <script>
-        const katz = document.querySelector('.katz'), probe = document.querySelector('.font-probe'),
-            resultsData = document.querySelector('.results-data');
+        const katz = document.querySelector('.katz'), resultsData = document.querySelector('.results-data');
         katz.style.display = 'none';
 
         function set(data) {
-            data.clusters.push({ x: 0, y: 0, r: 0.02 }, { x: 1, y: 0, r: 0.02 }, { x: 0, y: 1, r: 0.02 }, { x: 1, y: 1, r: 0.02 });
-
-            document.querySelector('#data-circles').innerHTML = data.clusters.map(({ x, y, r }) =>
-                `<circle cx="${x}" cy="${y}" r="${r}" transform="scale(1000)" fill="white"/>`).join('');
-
-            document.querySelector('.results-data-counters').innerHTML = data.clusters.filter(({ count }) => count).map(
-                ({ x, y, r, count }) => {
-                    probe.innerText = count;
-                    const { width: resultsSize } = resultsData.getBoundingClientRect(),
-                        { width, height } = probe.getBoundingClientRect(),
-                        font = 2 * r * resultsSize * 100 / Math.sqrt(width ** 2 + height ** 2);
-
-                    return `<div style="position:absolute;left:${x * resultsSize - width * font / 200}px;top:${y * resultsSize - height * font / 200}px;font-size:${font}px">${count}</div>`;
-
-                }).join('');
-
-            if (data.katz) {
-                katz.style.display = '';
-                katz.style.left = (data.katz.x * 100 - 8) + "%";
-                katz.style.top = (data.katz.y * 100 - 8) + "%";
-            } else {
-                katz.style.display = 'none';
+            if (data.messages) { } else if (data.points) {
+                const count = data.points.length, size = count < 1000 ? 1 / (30 + Math.log10(count) * 10) : Math.sqrt(1000 / count) / 60;
+                document.querySelector('.message-count').innerText = 'Ответов: ' + data.points.length.toLocaleString();
+                document.querySelector('#data-circles').innerHTML =
+                    [[0, 0], [1, 0], [0, 1], [1, 1]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="0.01" transform="scale(1000)" fill="white"/>`) +
+                    data.points.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${size}" transform="scale(1000)" fill="white"/>`);
             }
         }
 
-        document.fonts.ready.then(() => {
-            const update = () => fetch('./clusters.json').then(res => res.json()).then(set);
-            setInterval(update, 10000);
-            update();
-        });
+        const drawRandom = count => set({ points: new Array(count).fill().map(() => ([Math.random(), Math.random()])) });
+
+
+        // if (data.katz) {
+        //     katz.style.display = '';
+        //     katz.style.left = (data.katz[0] * 100 - 8) + "%";
+        //     katz.style.top = (data.katz[1] * 100 - 8) + "%";
+        // } else {
+        //     katz.style.display = 'none';
+        // }
+
+        // document.fonts.ready.then(() => {
+        // const update = () => fetch('./clusters.json').then(res => res.json()).then(set);
+        // setInterval(update, 10000);
+        // update();
+        // });
+
+
     </script>
 </body>
 

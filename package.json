@@ -4,7 +4,9 @@
   "description": "Based on https://github.com/8values/8values.github.io https://github.com/8values-ru/8values-ru.github.io",
   "main": "./src/index.js",
   "scripts": {
-    "start": "node ./src"
+    "start": "node ./src",
+    "test-server": "node ./test/fake-api-load-test",
+    "test": "QUIZBOT_API_BASE=http://localhost:8900"
   },
   "repository": {
     "type": "git",
@@ -17,10 +19,13 @@
   },
   "homepage": "https://github.com/enovikov11/political-quiz-bot#readme",
   "dependencies": {
-    "cluster-plot": "^1.3.0",
+    "express": "^4.17.1",
     "node-fetch": "^2.6.1",
     "sqlite": "^4.0.18",
     "sqlite3": "^5.0.0",
     "yaml": "^1.10.0"
+  },
+  "devDependencies": {
+    "puppeteer": "^5.5.0"
   }
 }
