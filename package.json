@@ -21,11 +21,6 @@
   "dependencies": {
     "express": "^4.17.1",
     "node-fetch": "^2.6.1",
-    "sqlite": "^4.0.18",
-    "sqlite3": "^5.0.0",
     "yaml": "^1.10.0"
-  },
-  "devDependencies": {
-    "puppeteer": "^5.5.0"
   }
 }

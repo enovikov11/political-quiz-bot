@@ -1,6 +1,3 @@
 .DS_Store
 node_modules
-api.log
-db.sqlite
-clusters.json
-*res/static/*
+temp

@@ -45,8 +45,9 @@
 
         .katz {
             position: absolute;
-            width: 16%;
-            height: 16%;
+            width: 10%;
+            height: 10%;
+            z-index: 10;
         }
 
         .results-item {
@@ -105,8 +106,8 @@
             background-color: grey;
             left: 0;
             top: 0;
-            font-size: 45px;
-            padding: 0 10px;
+            font-size: 35px;
+            padding: 0 15px;
             font-weight: bold;
         }
 
@@ -117,6 +118,15 @@
             right: 0;
             font-size: 30px;
             padding: 0 5px;
+        }
+
+        .questions {
+            width: 1080px;
+            height: 1080px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 30px;
         }
     </style>
 </head>
@@ -211,57 +221,122 @@
             </svg>
         </div>
     </div>
+    <div class="questions">
+        <div class="question-last"></div>
+        <div class="question-last-answers">
+            <div class="answer-0">
+                <div class="question-answer-text"></div>
+                <div class="question-answer-bar"></div>
+            </div>
+            <div class="answer-1">
+                <div class="question-answer-text"></div>
+                <div class="question-answer-bar"></div>
+            </div>
+            <div class="answer-2">
+                <div class="question-answer-text"></div>
+                <div class="question-answer-bar"></div>
+            </div>
+            <div class="answer-3">
+                <div class="question-answer-text"></div>
+                <div class="question-answer-bar"></div>
+            </div>
+            <div class="answer-4">
+                <div class="question-answer-text"></div>
+                <div class="question-answer-bar"></div>
+            </div>
+        </div>
+        <div class="question-current"></div>
+    </div>
     <span class="message-big">Пишите в телеграм боту @max_katz_bot</span>
     <span class="message-small">Запрогал Евгений Новиков github.com/enovikov11 Основано на тесте 8values</span>
     <span class="message-count"></span>
     <script>
         const katz = document.querySelector('.katz'), resultsData = document.querySelector('.results-data'),
             messageCount = document.querySelector('.message-count'), dataCircles = document.querySelector('#data-circles'),
-            results = document.querySelector('.results');
+            results = document.querySelector('.results'), questions = document.querySelector('.questions'),
+            questionLast = document.querySelector('.question-last'), questionCurrent = document.querySelector('.question-current'),
+            lastAnswers = document.querySelector('.question-last-answers');
         katz.style.display = 'none';
 
         function set(data) {
-            if (data.messages) {
+            if (data.questions) {
                 results.style.display = 'none';
                 messageCount.innerText = '';
-            } else if (data.points) {
-                const count = data.points.length, size = 1 / (35 + Math.log10(Math.min(1600, count)) * 10), quadrants = {},
-                    filteredPoints = count < 1600 ? data.points : data.points.filter(([x, y]) => {
+                questions.style.display = '';
+
+                if (data.questions.last) {
+                    questionLast.innerText = data.questions.last;
+                    questionLast.style.display = '';
+                } else {
+                    questionLast.style.display = 'none';
+                }
+
+                if (data.questions.current) {
+                    questionCurrent.innerText = data.questions.last;
+                    questionCurrent.style.display = '';
+                } else {
+                    questionCurrent.style.display = 'none';
+                }
+
+                if (data.questions.lastAnswers) {
+                    lastAnswers.style.display = '';
+
+                    const sum = Object.values(data.questions.lastAnswers).reduce((a, b) => a + b);
+
+                    document.querySelector('.answer-0 .question-answer-text').innerText = data.questions.lastAnswers['-1'];
+                    document.querySelector('.answer-0 .question-answer-bar').style.width = (100 * data.questions.lastAnswers['-1'] / sum) + "%";
+                    document.querySelector('.answer-1 .question-answer-text').innerText = data.questions.lastAnswers['-0.5'];
+                    document.querySelector('.answer-1 .question-answer-bar').style.width = (100 * data.questions.lastAnswers['-0.5'] / sum) + "%";
+                    document.querySelector('.answer-2 .question-answer-text').innerText = data.questions.lastAnswers['0'];
+                    document.querySelector('.answer-2 .question-answer-bar').style.width = (100 * data.questions.lastAnswers['0'] / sum) + "%";
+                    document.querySelector('.answer-3 .question-answer-text').innerText = data.questions.lastAnswers['0.5'];
+                    document.querySelector('.answer-3 .question-answer-bar').style.width = (100 * data.questions.lastAnswers['0.5'] / sum) + "%";
+                    document.querySelector('.answer-4 .question-answer-text').innerText = data.questions.lastAnswers['1'];
+                    document.querySelector('.answer-4 .question-answer-bar').style.width = (100 * data.questions.lastAnswers['1'] / sum) + "%";
+                } else {
+                    lastAnswers.style.display = 'none';
+                }
+            } else if (data.users) {
+                const count = data.users.length + (data.katz ? 1 : 0), size = 1 / (35 + Math.log10(Math.min(1600, count)) * 10), quadrants = {},
+                    filteredUsers = count < 1600 ? data.users : data.users.filter(([x, y]) => {
                         const id = 40 * Math.floor((40 - 1e-10) * x) + Math.floor((40 - 1e-10) * y);
                         quadrants[id] = (quadrants[id] || 0) + 1;
                         return quadrants[id] < 2;
                     });
 
                 results.style.display = '';
-                messageCount.innerText = 'Ответов: ' + count.toLocaleString();
+                messageCount.innerText = 'Пользователей: ' + count.toLocaleString();
+                questions.style.display = 'none';
 
                 dataCircles.innerHTML =
                     [[0, 0], [1, 0], [0, 1], [1, 1]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="0.01" transform="scale(1000)" fill="white"/>`) +
-                    filteredPoints.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${size}" transform="scale(1000)" fill="white"/>`);
+                    filteredUsers.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${size}" transform="scale(1000)" fill="white"/>`);
+
+                if (data.katz) {
+                    katz.style.display = '';
+                    katz.style.left = (data.katz[0] * 100 - 5) + "%";
+                    katz.style.top = (data.katz[1] * 100 - 5) + "%";
+                } else {
+                    katz.style.display = 'none';
+                }
             }
         }
 
-        const drawRandom = count => set({ points: new Array(count).fill().map(() => ([Math.random(), Math.random()])) });
+        set({
+            questions: {
+                last: "Все люди — независимо от таких факторов, как культура или сексуальная ориентация— должны рассматриваться как равные?",
+                lastAnswers: { "-1": 10, "-0.5": 100, "0": 12, "0.5": 1342, "1": 2 },
+                current: "Все люди — независимо от таких факторов, как культура или сексуальная ориентация— должны рассматриваться как равные?",
+            }
+        });
 
-
-
-
-
-        // if (data.katz) {
-        //     katz.style.display = '';
-        //     katz.style.left = (data.katz[0] * 100 - 8) + "%";
-        //     katz.style.top = (data.katz[1] * 100 - 8) + "%";
-        // } else {
-        //     katz.style.display = 'none';
-        // }
+        // const drawRandom = count => set({ users: new Array(count === 0 ? 0 : count - 1).fill().map(() => ([Math.random(), Math.random()])), katz: [Math.random(), Math.random()] });
 
         // document.fonts.ready.then(() => {
         // const update = () => fetch('./clusters.json').then(res => res.json()).then(set);
         // setInterval(update, 10000);
         // update();
         // });
-
-
     </script>
 </body>
 
