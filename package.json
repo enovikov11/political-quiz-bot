@@ -5,8 +5,7 @@
   "main": "./src/index.js",
   "scripts": {
     "start": "node ./src",
-    "test-server": "node ./test/fake-api-load-test",
-    "test": "QUIZBOT_API_BASE=http://localhost:8900"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -22,5 +21,8 @@
     "express": "^4.17.1",
     "node-fetch": "^2.6.1",
     "yaml": "^1.10.0"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3"
   }
 }

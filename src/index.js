@@ -21,7 +21,7 @@ const { UPDATE_POLLING_INTERVAL_S, UPDATE_POLLING_TIMEOUT_MS } = require('./sett
     { apiRaw, apiEnqueue } = require('./api-actor'),
     { process } = require('./api-logic');
 
-let state = { offset: 0, lastSyncAt: 0, katzAnsweredCount: 0, users: {} };
+let state = { offset: 0, lastSyncAt: 0, maxAvailableQuestionId: 0, answers: {} };
 
 (async () => {
     while (true) {
@@ -33,14 +33,6 @@ let state = { offset: 0, lastSyncAt: 0, katzAnsweredCount: 0, users: {} };
         process(updates, state, calls);
         for (let i = 0; i < calls.length; i++) {
             apiEnqueue(...calls[i]);
-        }
-
-        // FIXME: deletedebug
-        if (calls.length > 0) {
-            // console.log(JSON.stringify(calls));
-            // console.log();
-            // console.log(JSON.stringify(state));
-            // console.log();
         }
     }
 })().catch(console.error);

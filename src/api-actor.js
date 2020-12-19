@@ -8,10 +8,6 @@ async function apiRaw(method, data, timeout = 2000, retries = 1) {
     if (result.ok) {
         return result;
     } else if (retries > 0) {
-        // FIXME: deletedebug
-        // console.log(JSON.stringify(result));
-        // console.log();
-
         await new Promise(res => setTimeout(res, 4000));
         return await apiRaw(method, data, retries - 1);
     } else {

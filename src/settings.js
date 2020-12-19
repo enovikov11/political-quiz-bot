@@ -6,13 +6,13 @@ const { messages, buttons, questions } = YAML.parse(fs.readFileSync('./res/setti
 module.exports = {
     apiBase: process.env.QUIZBOT_API_BASE || "https://api.telegram.org/", // https://core.telegram.org/bots/api
     apiKey: process.env.QUIZBOT_API_KEY,
-    baseUrl: process.env.QUIZBOT_BASE_URL,
+    publicUrl: process.env.QUIZBOT_PUBLIC_URL,
 
     UPDATE_POLLING_INTERVAL_S: '60',
     UPDATE_POLLING_TIMEOUT_MS: 120000,
     REBUILD_RESULTS_INTERVAL_MS: 30000,
 
-    katzUsername: 'Xdgfhj',
+    adminUsername: 'Xdgfhj',
 
     messages: messages.ru,
     buttons: buttons.ru,
