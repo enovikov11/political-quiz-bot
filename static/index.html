@@ -43,7 +43,7 @@
             left: 0;
         }
 
-        .katz {
+        .admin {
             position: absolute;
             width: 10%;
             height: 10%;
@@ -126,7 +126,26 @@
             position: absolute;
             top: 0;
             left: 0;
+            padding: 120px 30px;
+
+            font-size: 40px;
+            color: black;
+        }
+
+        .question-last,
+        .question-current {
+            background-color: white;
             padding: 30px;
+            margin: 30px;
+            border-radius: 30px;
+        }
+
+        .question-current {
+            margin: 0 30px 100px 30px;
+        }
+
+        .question-last-answers {
+            text-align: center;
         }
     </style>
 </head>
@@ -147,7 +166,7 @@
                     <rect x="500" y="500" width="500" height="500" fill="#DD2FFD" />
                 </g>
             </svg>
-            <img src="katz.png" class="katz" />
+            <img src="admin.png" class="admin" />
         </div>
         <div class="results-top results-item">
             <svg width="112" height="112" viewBox="0 0 112 112" class="results-circle">
@@ -222,41 +241,20 @@
         </div>
     </div>
     <div class="questions">
-        <div class="question-last"></div>
-        <div class="question-last-answers">
-            <div class="answer-0">
-                <div class="question-answer-text"></div>
-                <div class="question-answer-bar"></div>
-            </div>
-            <div class="answer-1">
-                <div class="question-answer-text"></div>
-                <div class="question-answer-bar"></div>
-            </div>
-            <div class="answer-2">
-                <div class="question-answer-text"></div>
-                <div class="question-answer-bar"></div>
-            </div>
-            <div class="answer-3">
-                <div class="question-answer-text"></div>
-                <div class="question-answer-bar"></div>
-            </div>
-            <div class="answer-4">
-                <div class="question-answer-text"></div>
-                <div class="question-answer-bar"></div>
-            </div>
-        </div>
         <div class="question-current"></div>
+        <div class="question-last"></div>
+        <div class="question-last-answers"></div>
     </div>
     <span class="message-big">Пишите в телеграм боту @max_katz_bot</span>
     <span class="message-small">Запрогал Евгений Новиков github.com/enovikov11 Основано на тесте 8values</span>
     <span class="message-count"></span>
     <script>
-        const katz = document.querySelector('.katz'), resultsData = document.querySelector('.results-data'),
+        const admin = document.querySelector('.admin'), resultsData = document.querySelector('.results-data'),
             messageCount = document.querySelector('.message-count'), dataCircles = document.querySelector('#data-circles'),
             results = document.querySelector('.results'), questions = document.querySelector('.questions'),
             questionLast = document.querySelector('.question-last'), questionCurrent = document.querySelector('.question-current'),
             lastAnswers = document.querySelector('.question-last-answers');
-        katz.style.display = 'none';
+        admin.style.display = 'none';
 
         function set(data) {
             if (data.questions) {
@@ -272,7 +270,7 @@
                 }
 
                 if (data.questions.current) {
-                    questionCurrent.innerText = data.questions.last;
+                    questionCurrent.innerText = data.questions.current;
                     questionCurrent.style.display = '';
                 } else {
                     questionCurrent.style.display = 'none';
@@ -283,21 +281,20 @@
 
                     const sum = Object.values(data.questions.lastAnswers).reduce((a, b) => a + b);
 
-                    document.querySelector('.answer-0 .question-answer-text').innerText = data.questions.lastAnswers['-1'];
-                    document.querySelector('.answer-0 .question-answer-bar').style.width = (100 * data.questions.lastAnswers['-1'] / sum) + "%";
-                    document.querySelector('.answer-1 .question-answer-text').innerText = data.questions.lastAnswers['-0.5'];
-                    document.querySelector('.answer-1 .question-answer-bar').style.width = (100 * data.questions.lastAnswers['-0.5'] / sum) + "%";
-                    document.querySelector('.answer-2 .question-answer-text').innerText = data.questions.lastAnswers['0'];
-                    document.querySelector('.answer-2 .question-answer-bar').style.width = (100 * data.questions.lastAnswers['0'] / sum) + "%";
-                    document.querySelector('.answer-3 .question-answer-text').innerText = data.questions.lastAnswers['0.5'];
-                    document.querySelector('.answer-3 .question-answer-bar').style.width = (100 * data.questions.lastAnswers['0.5'] / sum) + "%";
-                    document.querySelector('.answer-4 .question-answer-text').innerText = data.questions.lastAnswers['1'];
-                    document.querySelector('.answer-4 .question-answer-bar').style.width = (100 * data.questions.lastAnswers['1'] / sum) + "%";
+                    lastAnswers.innerHTML = [
+                        { key: '1', caption: "🟢🟢 Да" },
+                        { key: '0.5', caption: "🟢 Скорее да" },
+                        { key: '0', caption: "⚪️ Не знаю" },
+                        { key: '-0.5', caption: "🔴 Скорее нет" },
+                        { key: '-1', caption: "🔴🔴 Нет" }
+                    ].map(({ key, caption }) => {
+                        return `${caption}: ${data.questions.lastAnswers[key]} (${(data.questions.lastAnswers[key] * 100 / sum).toFixed(2)}%)`;
+                    }).join('<br/>');
                 } else {
                     lastAnswers.style.display = 'none';
                 }
             } else if (data.users) {
-                const count = data.users.length + (data.katz ? 1 : 0), size = 1 / (35 + Math.log10(Math.min(1600, count)) * 10), quadrants = {},
+                const count = data.users.length + (data.admin ? 1 : 0), size = 1 / (35 + Math.log10(Math.min(1600, count)) * 10), quadrants = {},
                     filteredUsers = count < 1600 ? data.users : data.users.filter(([x, y]) => {
                         const id = 40 * Math.floor((40 - 1e-10) * x) + Math.floor((40 - 1e-10) * y);
                         quadrants[id] = (quadrants[id] || 0) + 1;
@@ -312,31 +309,33 @@
                     [[0, 0], [1, 0], [0, 1], [1, 1]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="0.01" transform="scale(1000)" fill="white"/>`) +
                     filteredUsers.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${size}" transform="scale(1000)" fill="white"/>`);
 
-                if (data.katz) {
-                    katz.style.display = '';
-                    katz.style.left = (data.katz[0] * 100 - 5) + "%";
-                    katz.style.top = (data.katz[1] * 100 - 5) + "%";
+                if (data.admin) {
+                    admin.style.display = '';
+                    admin.style.left = (data.admin[0] * 100 - 5) + "%";
+                    admin.style.top = (data.admin[1] * 100 - 5) + "%";
                 } else {
-                    katz.style.display = 'none';
+                    admin.style.display = 'none';
                 }
+            } else {
+                results.style.display = 'none';
+                questions.style.display = 'none';
             }
         }
 
-        set({
-            questions: {
-                last: "Все люди — независимо от таких факторов, как культура или сексуальная ориентация— должны рассматриваться как равные?",
-                lastAnswers: { "-1": 10, "-0.5": 100, "0": 12, "0.5": 1342, "1": 2 },
-                current: "Все люди — независимо от таких факторов, как культура или сексуальная ориентация— должны рассматриваться как равные?",
-            }
-        });
+        if (document.location.hash !== "#nows") {
+            const ws = new WebSocket(location.href.replace(/^http/, 'ws'));
 
-        // const drawRandom = count => set({ users: new Array(count === 0 ? 0 : count - 1).fill().map(() => ([Math.random(), Math.random()])), katz: [Math.random(), Math.random()] });
+            ws.onclose = () => setTimeout(() => location.reload(), 2000);
+            ws.onmessage = ({ data }) => {
+                try {
+                    const result = JSON.parse(data);
+                    console.log(result);
+                    set(result);
+                } catch (e) { }
+            };
 
-        // document.fonts.ready.then(() => {
-        // const update = () => fetch('./clusters.json').then(res => res.json()).then(set);
-        // setInterval(update, 10000);
-        // update();
-        // });
+            set({});
+        }
     </script>
 </body>
 

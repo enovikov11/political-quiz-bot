@@ -18,13 +18,13 @@ autotesting: units for logic, screenshot for results, load
 */
 
 const { UPDATE_POLLING_INTERVAL_S, UPDATE_POLLING_TIMEOUT_MS } = require('./settings'),
-    { apiRaw, apiEnqueue } = require('./api-actor'),
-    { process } = require('./api-logic');
+    { apiRaw, apiEnqueue } = require('./api'), { process } = require('./logic'),
+    { updateResults } = require('./results');
 
-let state = { offset: 0, lastSyncAt: 0, maxAvailableQuestionId: 0, answers: {} };
+let state = { offset: 0, nextSyncAt: 0, maxAvailableQuestionId: 0, answers: {} }, isRunning = true;
 
 (async () => {
-    while (true) {
+    while (isRunning) {
         const updates = await apiRaw('getUpdates', {
             offset: state.offset, timeout: UPDATE_POLLING_INTERVAL_S, allowed_updates: ['message', 'callback_query']
         }, UPDATE_POLLING_TIMEOUT_MS);
@@ -34,5 +34,6 @@ let state = { offset: 0, lastSyncAt: 0, maxAvailableQuestionId: 0, answers: {} }
         for (let i = 0; i < calls.length; i++) {
             apiEnqueue(...calls[i]);
         }
+        updateResults(state);
     }
 })().catch(console.error);
