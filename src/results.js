@@ -12,7 +12,7 @@ let result = '';
 
 wss.on('connection', conn => {
     connections.add(conn);
-    connection.on('close', () => { connections.delete(conn); })
+    conn.on('close', () => { connections.delete(conn); })
     try {
         conn.send(result);
     } catch (e) { }

@@ -8,7 +8,7 @@ const listenMode = 'https';
 
 const listenConfig = listenMode === 'https' ?
     {
-        port: 4443,
+        port: 443,
         type: 'https',
         options: {
             key: fs.readFileSync(keyFilename, 'utf-8'),
@@ -16,7 +16,7 @@ const listenConfig = listenMode === 'https' ?
         }
     } :
     {
-        port: 8080,
+        port: 80,
         type: 'http'
     };
 
@@ -44,7 +44,7 @@ module.exports = {
 };
 
 // FIXME
-const debugShrink = false;
+const debugShrink = true;
 if (debugShrink) {
     module.exports.questions = module.exports.questions.splice(48)
     module.exports.minQuestionsResult = 2;

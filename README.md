@@ -1,28 +1,7 @@
 # 8values
 Based on https://github.com/8values/8values.github.io https://github.com/8values-ru/8values-ru.github.io
 
-FIXME: make docker
+`docker build -t political-quiz-bot .`  
+`docker run -dit --rm -p 443:443 -v /root/political-quiz-bot/secret:/app/secret:ro -v /root/political-quiz-bot/data:/app/data --name political-quiz-bot political-quiz-bot`  
 
-apt update
-apt upgrade
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.0/install.sh | bash
-nvm install 15.0.0
-nvm use 15.0.0
-apt install -y nginx tmux git build-essential g++ make
-snap install core
-snap refresh core
-snap install --classic certbot
-certbot --nginx
-git clone https://github.com/enovikov11/political-quiz-bot.git
-rm /var/www/html/index.nginx-debian.html
-cp ./res/www-index.html /var/www/html/index.html
-cp ./res/Jost-SemiBold.ttf /var/www/html/Jost-SemiBold.ttf
-
-npm start
-
-export QUIZBOT_API_KEY=""
-export QUIZBOT_BASE_DIR="/var/www/html/"
-export QUIZBOT_BASE_URL="https://host/"
-
-ssh max mkdir /var/www/html/static  
-scp -r ./res/static max:/var/www/html
+`docker run -dit --rm -p 443:443 -v /Users/enovikov11/Desktop/political-quiz-bot/secret:/app/secret:ro -v /Users/enovikov11/Desktop/political-quiz-bot/data:/app/data --name political-quiz-bot political-quiz-bot`  
