@@ -118,7 +118,7 @@ function sendResults(calls, chatId, answers) {
     const point = calcUserPoint(answers);
     calls.push([chatId, 'sendMessage', { chat_id: chatId, text: messages.description, parse_mode: 'HTML' }]);
     calls.push([chatId, 'sendMessage', { chat_id: chatId, text: `Твой результат на <b>${Math.round((1 - point[0]) * 100)}%</b> за <b>Равенство</b> и на <b>${Math.round(point[0] * 100)}%</b> за <b>Рынки</b>, на <b>${Math.round((1 - point[1]) * 100)}%</b> за <b>Власть</b> и на <b>${Math.round(point[1] * 100)}%</b> за <b>Свободу</b>`, parse_mode: 'HTML' }]);
-    calls.push([chatId, 'sendPhoto', { chat_id: chatId, photo: `${publicUrlBase}results.png?x=${Math.round(point[0] * 100)}&y=${Math.round(point[1] * 100)}` }]);
+    calls.push([chatId, 'sendPhoto', { chat_id: chatId, photo: `${publicUrlBase}results/${Math.round(point[0] * 100)}-${Math.round(point[1] * 100)}.png` }]);
 }
 
 function processUpdate(update, state, calls) {

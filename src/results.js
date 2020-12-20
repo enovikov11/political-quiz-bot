@@ -18,9 +18,30 @@ wss.on('connection', conn => {
     } catch (e) { }
 });
 
-app.use(express.static('./static'));
+(async () => {
+    const puppeteer = require('puppeteer'), fs = require('fs'),
+        browser = await puppeteer.launch({ args: ['--no-sandbox'] }), page = await browser.newPage();
 
-server.listen(listenConfig.port);
+    await page.setContent(fs.readFileSync('./static/index.html', 'utf-8'), { waitUntil: 'domcontentloaded' });
+    await page.setViewport({ width: 1080, height: 1080 });
+
+    app.use(express.static('./static'));
+
+    app.get('/results/*', async (req, res, next) => {
+        const result = req.path.match(/\/results\/(\d+)-(\d+)\.png/);
+        if (!result) { next(); return; }
+        const x = +result[1], y = +result[2];
+        if (x < 0 || x > 100 || y < 0 || y > 100) { next(); return; }
+
+        await page.evaluate((x, y) => { setOne(x, y) }, x, y);
+        await page.screenshot({ path: `./results/${x}-${y}.png`, omitBackground: true });
+        next();
+    });
+
+    app.use('/results', express.static('./results'));
+
+    server.listen(listenConfig.port);
+})().catch(console.error);
 
 function updateResults(state) {
     if (state.nextSyncAt > Date.now()) {

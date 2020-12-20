@@ -15,8 +15,6 @@
             height: 1080px;
             margin: 0;
             font-family: 'Jost';
-            color: white;
-            background-color: lightgray;
         }
 
         .results {
@@ -134,7 +132,8 @@
 
         .question-last,
         .question-current {
-            background-color: white;
+            background-color: lightgray;
+            border: 2px black solid;
             padding: 30px;
             margin: 30px;
             border-radius: 30px;
@@ -322,7 +321,19 @@
             }
         }
 
-        if (document.location.hash !== "#nows") {
+        function setOne(x, y) {
+            dataCircles.innerHTML =
+                [[0, 0], [1, 0], [0, 1], [1, 1]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="0.01" transform="scale(1000)" fill="white"/>`) +
+                `<circle cx="${x / 100}" cy="${y / 100}" r="${1 / 35}" transform="scale(1000)" fill="white"/>`;
+        }
+
+        if (location.href === "about:blank") {
+            document.querySelector('.message-big').remove();
+            document.querySelector('.message-small').remove();
+            document.querySelector('.questions').remove();
+            document.querySelector('.results').style.top = '-30px';
+            document.querySelector('.results').style.left = '15px';
+        } else {
             const ws = new WebSocket(location.href.replace(/^http/, 'ws'));
 
             ws.onclose = () => setTimeout(() => location.reload(), 2000);
