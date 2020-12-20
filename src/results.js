@@ -1,6 +1,10 @@
-const express = require('express'), http = require('http'), ws = require('ws'),
-    { listenPort, SYNC_INTERVAL_MS } = require('./settings'), { calc } = require('./logic'), connections = new Set(),
-    app = express(), server = http.createServer(app), wss = new ws.Server({ server });
+const { listenConfig, SYNC_INTERVAL_MS } = require('./settings'), { calc } = require('./logic'),
+    express = require('express'), app = express(),
+
+    server = listenConfig.type === 'https' ? require('https').createServer(listenConfig.options, app) :
+        require('http').createServer(app),
+
+    ws = require('ws'), wss = new ws.Server({ server }), connections = new Set();
 
 let result;
 
@@ -21,7 +25,7 @@ wss.on('connection', connection => {
 
 app.use(express.static('./static'));
 
-server.listen(listenPort);
+server.listen(listenConfig.port);
 
 function updateResults(state) {
     if (state.nextSyncAt > Date.now()) {
