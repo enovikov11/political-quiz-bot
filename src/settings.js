@@ -2,17 +2,17 @@ const fs = require('fs');
 const YAML = require('yaml');
 
 const { messages, buttons, questions } = YAML.parse(fs.readFileSync('./src/settings.yaml', 'utf8'));
-const { apiKey, publicUrlBase, adminUsername } = require('../secret');
+const { apiKey, publicUrlBase, adminUsername, keyFilename, certFilename } = require('../secret');
 
-const listenMode = 'http';
+const listenMode = 'https';
 
 const listenConfig = listenMode === 'https' ?
     {
         port: 4443,
         type: 'https',
         options: {
-            key: fs.readFileSync('./secret/privkey.pem', 'utf-8'),
-            cert: fs.readFileSync('./secret/cert.pem', 'utf-8')
+            key: fs.readFileSync(keyFilename, 'utf-8'),
+            cert: fs.readFileSync(certFilename, 'utf-8')
         }
     } :
     {
