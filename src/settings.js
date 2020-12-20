@@ -1,7 +1,7 @@
 const fs = require('fs');
 const YAML = require('yaml');
 
-const { messages, buttons, questions } = YAML.parse(fs.readFileSync('./res/settings.yaml', 'utf8'));
+const { messages, buttons, questions } = YAML.parse(fs.readFileSync('./src/settings.yaml', 'utf8'));
 
 const debugShrink = true;
 
