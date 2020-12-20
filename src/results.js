@@ -1,26 +1,21 @@
-const { listenConfig, SYNC_INTERVAL_MS } = require('./settings'), { calc } = require('./logic'),
+const { listenConfig, SYNC_INTERVAL_MS, stateLogFilename, stateFilename } = require('./settings'), { calc } = require('./logic'),
     express = require('express'), app = express(),
 
     server = listenConfig.type === 'https' ? require('https').createServer(listenConfig.options, app) :
         require('http').createServer(app),
 
-    ws = require('ws'), wss = new ws.Server({ server }), connections = new Set();
+    ws = require('ws'), wss = new ws.Server({ server }), connections = new Set(),
 
-let result;
+    fs = require('fs'), fd = fs.openSync(stateLogFilename, 'a');;
 
-wss.on('connection', connection => {
-    connections.add(connection);
-    connection.on('close', () => {
-        connections.delete(connection);
-    })
+let result = '';
 
-    if (result) {
-        [...connections].forEach(conn => {
-            try {
-                conn.send(result);
-            } catch (e) { }
-        });
-    }
+wss.on('connection', conn => {
+    connections.add(conn);
+    connection.on('close', () => { connections.delete(conn); })
+    try {
+        conn.send(result);
+    } catch (e) { }
 });
 
 app.use(express.static('./static'));
@@ -33,6 +28,9 @@ function updateResults(state) {
     }
 
     state.nextSyncAt = Date.now() + SYNC_INTERVAL_MS;
+    const jsonState = JSON.stringify(state);
+    fs.writeFileSync(stateFilename, jsonState);
+    fs.appendFile(fd, jsonState + '\n', () => { });
 
     result = JSON.stringify(calc(state));
     [...connections].forEach(conn => {

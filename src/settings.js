@@ -27,6 +27,10 @@ module.exports = {
     REBUILD_RESULTS_INTERVAL_MS: 30000,
     SYNC_INTERVAL_MS: 10000,
 
+    apiLogFilename: './data/api.json.log',
+    stateLogFilename: './data/state.json.log',
+    stateFilename: './data/state.json',
+
     apiKey,
     publicUrlBase,
     adminUsername,

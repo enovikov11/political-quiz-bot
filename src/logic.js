@@ -153,7 +153,7 @@ function processUpdate(update, state, calls) {
     }
 }
 
-function process(updates, state, calls) {
+function processUpdates(updates, state, calls) {
     if (!updates.ok) { return; }
 
     for (let i = 0; i < updates.result.length; i++) {
@@ -174,4 +174,8 @@ function process(updates, state, calls) {
     state.offset++;
 }
 
-module.exports = { process, calc };
+function getInitialState() {
+    return { offset: 0, nextSyncAt: 0, maxAvailableQuestionId: 0, answers: {} };
+}
+
+module.exports = { processUpdates, calc, getInitialState };
