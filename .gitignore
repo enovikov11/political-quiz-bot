@@ -1,3 +1,6 @@
 .DS_Store
 secret.json
 temp.md
+node_modules
+data
+certs

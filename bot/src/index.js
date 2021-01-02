@@ -11,11 +11,11 @@ try {
 (async () => {
     while (isRunning) {
         const updates = await apiRaw('getUpdates', {
-            offset: state.offset, timeout: 15, allowed_updates: ['message', 'callback_query']
+            offset: state.lastUpdateId + 1, timeout: 15, allowed_updates: ['message', 'callback_query']
         }, 30000);
 
         let calls = [];
-        const results = processUpdates(updates, state, calls);
+        const results = processUpdates(state, updates, calls);
         for (let i = 0; i < calls.length; i++) {
             apiEnqueue(...calls[i]);
         }

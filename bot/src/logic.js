@@ -33,15 +33,15 @@ function getResults(state) {
             admin: getUserPoint(state[adminChatId])
         }
     } else {
-        const questions = {};
+        const questionsResult = {};
 
         if (state.maxAvailableQuestionId > 0) {
-            questions.last = questions[state.maxAvailableQuestionId - 1].question;
-            questions.lastAnswers = getDivision(state, state.maxAvailableQuestionId - 1);
+            questionsResult.last = questions[state.maxAvailableQuestionId - 1].question;
+            questionsResult.lastAnswers = getDivision(state, state.maxAvailableQuestionId - 1);
         }
-        questions.current = questions[state.maxAvailableQuestionId].question;
+        questionsResult.current = questions[state.maxAvailableQuestionId].question;
 
-        return { questions };
+        return { questions: questionsResult };
     }
 }
 
@@ -128,7 +128,7 @@ function processUpdates(state, updates, calls) {
     if (!updates.ok) { return; }
 
     for (let i = 0; i < updates.result.length; i++) {
-        const update = updates[i], chatId = update?.message?.chat?.id || update?.callback_query?.message?.chat?.id;
+        const update = updates.result[i], chatId = update?.message?.chat?.id || update?.callback_query?.message?.chat?.id;
         state.lastUpdateId = Math.max(state.lastUpdateId, update.update_id);
 
         if (!chatId || chatId < 0) { continue; }
