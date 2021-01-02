@@ -88,8 +88,8 @@ function getHtml(x, y) {
     <div class="results">
         <div class="results-data">
             <svg width="1000" height="1000" viewBox="0 0 1000 1000" class="results-data-svg">
-                <line x1="0" y1="0" x2="1000" y2="0" stroke="white" stroke-width="4" />
-                <line x1="0" y1="0" x2="0" y2="1000" stroke="white" stroke-width="4" />
+                <line x1="0" y1="2" x2="1000" y2="2" stroke="white" stroke-width="4" />
+                <line x1="2" y1="0" x2="2" y2="1000" stroke="white" stroke-width="4" />
                 <line x1="0" y1="998" x2="1000" y2="998" stroke="white" stroke-width="4" />
                 <line x1="998" y1="0" x2="998" y2="1000" stroke="white" stroke-width="4" />
                 <line x1="0" y1="498" x2="1000" y2="498" stroke="white" stroke-width="4" />
