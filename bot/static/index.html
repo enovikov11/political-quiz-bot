@@ -327,26 +327,16 @@
                 `<circle cx="${x / 100}" cy="${y / 100}" r="${1 / 35}" transform="scale(1000)" fill="white"/>`;
         }
 
-        if (location.href === "about:blank") {
-            document.querySelector('.message-big').remove();
-            document.querySelector('.message-small').remove();
-            document.querySelector('.questions').remove();
-            document.querySelector('.results').style.top = '-30px';
-            document.querySelector('.results').style.left = '15px';
-        } else {
-            const ws = new WebSocket(location.href.replace(/^http/, 'ws'));
+        const ws = new WebSocket(location.href.replace(/^http/, 'ws'));
 
-            ws.onclose = () => setTimeout(() => location.reload(), 2000);
-            ws.onmessage = ({ data }) => {
-                try {
-                    const result = JSON.parse(data);
-                    console.log(result);
-                    set(result);
-                } catch (e) { }
-            };
-
-            set({});
-        }
+        ws.onclose = () => setTimeout(() => location.reload(), 2000);
+        ws.onmessage = ({ data }) => {
+            try {
+                const result = JSON.parse(data);
+                console.log(result);
+                set(result);
+            } catch (e) { }
+        };
     </script>
 </body>
 

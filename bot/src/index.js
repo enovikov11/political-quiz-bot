@@ -1,22 +1,3 @@
-/*
-Проверять:
-- много сообщений
-- пригласили в группу
-- пришло некорректное обновление
-- два сообщения почти сразу
-- пересланное сообщение
-- что-то зависло
-- сеть потеряна
-- сеть флапает
-- пустой текст
-- одно сообщение упало а другое нет
-
-indivisual results generator by puppeteer
-settings.js
-docker
-autotesting: units for logic, screenshot for results, load
-*/
-
 const fs = require('fs'),
     { UPDATE_POLLING_INTERVAL_S, UPDATE_POLLING_TIMEOUT_MS, stateFilename } = require('./settings'),
     { apiRaw, apiEnqueue } = require('./api'), { processUpdates, getInitialState } = require('./logic'),

@@ -1,45 +1,36 @@
-const { messages, buttons, questions, adminUsername } = require('./settings');
-// publicUrlBase, minQuestionsResult
+const { messages, buttons, questions, adminUsername, minQuestionsResult } = require('./settings');
 
-// function calcUserPoint(answers) {
-//     let x = 0, xMax = 0, y = 0, yMax = 0, count = 0;
-//     for (let i = 0; i < answers.length; i++) {
-//         if (answers[i] === null) { continue; }
+function calcUserPoint(answers) {
+    let x = 0, xMax = 0, y = 0, yMax = 0, count = 0;
+    for (let i = 0; i < answers.length; i++) {
+        if (answers[i] === null) { continue; }
 
-//         count++;
-//         x -= answers[i] * questions[i]["more equality than markets"];
-//         xMax += Math.abs(questions[i]["more equality than markets"]);
-//         y += answers[i] * questions[i]["more liberty than authority"];
-//         yMax += Math.abs(questions[i]["more liberty than authority"]);
-//     }
+        count++;
+        x -= answers[i] * questions[i]["more equality than markets"];
+        xMax += Math.abs(questions[i]["more equality than markets"]);
+        y += answers[i] * questions[i]["more liberty than authority"];
+        yMax += Math.abs(questions[i]["more liberty than authority"]);
+    }
 
-//     return count < minQuestionsResult ? null : [xMax === 0 ? 0 : (1 + x / xMax) / 2, yMax === 0 ? 0 : (1 + y / yMax) / 2];
-// }
+    return count < minQuestionsResult ? null : [xMax === 0 ? 0 : (1 + x / xMax) / 2, yMax === 0 ? 0 : (1 + y / yMax) / 2];
+}
 
-// function calcPoints(state) {
-//     const result = { users: [] }
-//     for (let key in state.answers) {
-//         const point = calcUserPoint(state.answers[key]);
-//         if (!point) { continue; }
+function calcPoints(state) {
+    return {
+        users: Object.keys(state.answers).map(calcUserPoint).filter(Boolean),
+        admin: calcUserPoint(state.admin)
+    }
+}
 
-//         if (key === 'admin') {
-//             result.admin = point;
-//         } else {
-//             result.users.push(point);
-//         }
-//     }
-//     return result;
-// }
+function calcDivision(state, questionId) {
+    const results = { "-1": 0, "-0.5": 0, "0": 0, "0.5": 0, "1": 0 };
+    [...Object.values(state.answers), state.admin]
+        .map(answers => String(answers[questionId])).filter(Boolean)
+        .forEach(value => { results[value]++; });
+    return results;
+}
 
-// function getDivision(state, questionId) {
-//     const results = { "-1": 0, "-0.5": 0, "0": 0, "0.5": 0, "1": 0 };
-//     Object.values(state.answers).map(answers => String(answers[questionId])).filter(Boolean).forEach(value => {
-//         results[value]++;
-//     });
-//     return results;
-// }
-
-// function calc(state) {
+// function calcResults(state) {
 //     if (state.maxAvailableQuestionId === questions.length) {
 //         return calcPoints(state);
 //     } else {
@@ -57,39 +48,27 @@ const { messages, buttons, questions, adminUsername } = require('./settings');
 
 
 
+function getChatId(update) { return (update?.message || update?.callback_query?.message)?.chat?.id; }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-function getChatId(state, update) { return (update?.message || update?.callback_query?.message)?.chat?.id; }
-
-function getIsAdmin(state, update) { return (update?.message || update?.callback_query?.message)?.chat?.username === adminUsername; }
+function getIsAdmin(update) { return (update?.message || update?.callback_query?.message)?.chat?.username === adminUsername; }
 
 function getUserState(state, update) {
-    const id = getIsAdmin(state, update) ? 'admin' : getChatId(state, update);
+    if (getIsAdmin(update)) {
+        return state.admin;
+    } else {
+        const chatId = getChatId(update);
 
-    if (!state.answers[id]) {
-        state.answers[id] = new Array(questions.length).fill(null);
+        if (!state.answers[chatId]) {
+            state.answers[chatId] = new Array(questions.length).fill(null);
+        }
+
+        return state.answers[chatId];
     }
-
-    return state.answers[id];
 }
 
-function getActiveQuestionId(state, update, chatId) {
-    const answers = state.answers[chatId];
-
-    for (let i = 0; i < answers.length; i++) {
-        if (answers[i] === null) {
+function getActiveQuestionId(userState) {
+    for (let i = 0; i < userState.length; i++) {
+        if (userState[i] === null) {
             return i;
         }
     }
@@ -97,11 +76,10 @@ function getActiveQuestionId(state, update, chatId) {
     return null;
 }
 
-function getQuestionMessage(state, update, questionId) {
-    const chatId = getChatId(state, update), answer = state.answers[chatId];
+function getQuestionMessage(userState, questionId) {
     return {
         text: `${messages.question} ${questionId + 1} из ${questions.length}: ${questions[questionId].question}` +
-            (answer === null ? '' : `\n\n${messages.yourAnswer}: ${messages[answer]}`),
+            (userState[questionId] === null ? '' : `\n\n${messages.yourAnswer}: ${messages[userState[questionId]]}`),
         reply_markup: {
             inline_keyboard: [
                 ['-1', '-0.5', '0', '0.5', '1'].map(effect => ({ text: buttons[effect], callback_data: `answer${questionId}|${effect}` }))
@@ -112,28 +90,25 @@ function getQuestionMessage(state, update, questionId) {
 
 
 
-
-
-
-
-function doAnswerCallback(state, update, calls) {
+function doAnswerCallback(update, calls) {
     if (update?.callback_query?.id) {
+        const chatId = getChatId(update);
         calls.push([chatId, 'answerCallbackQuery', { callback_query_id: update?.callback_query?.id }]);
     }
 }
 
-function doWelcome(state, update, calls) {
+function doWelcome(update, calls) {
     if (update?.message?.text === '/start') {
-        const chatId = getChatId(state, update);
+        const chatId = getChatId(update);
         calls.push([chatId, 'sendMessage', { chat_id: chatId, text: messages.welcome }]);
     }
 }
 
 function doProcessAnswer(state, update, calls) {
-    const chatId = getChatId(state, update);
+    const chatId = getChatId(update), userState = getUserState(state, update);
     if (/^answer\d+\|(-1|-0\.5|0|0\.5|1)$/.test(update?.callback_query?.data || '')) {
         const [questionId, answerValue] = update?.callback_query?.data.replace('answer', '').split('|', 2).map(n => +n);
-        state.answers[chatId][questionId] = answerValue;
+        userState[questionId] = answerValue;
 
         const { text, reply_markup } = getQuestionMessage(state, update, questionId);
 
@@ -147,12 +122,12 @@ function doProcessAnswer(state, update, calls) {
 }
 
 function doSendQuestionOrResults(state, update, calls) {
-    const chatId = getChatId(state, update), activeQuestionId = getActiveQuestionId(state, update, chatId);
+    const chatId = getChatId(update), userState = getUserState(state, update), activeQuestionId = getActiveQuestionId(userState);
     if (activeQuestionId === null) {
-        // const point = calcUserPoint(answers);
+        const point = calcUserPoint(answers);
         calls.push([chatId, 'sendMessage', { chat_id: chatId, text: messages.description, parse_mode: 'HTML' }]);
-        // calls.push([chatId, 'sendMessage', { chat_id: chatId, text: `Твой результат на <b>${Math.round((1 - point[0]) * 100)}%</b> за <b>Равенство</b> и на <b>${Math.round(point[0] * 100)}%</b> за <b>Рынки</b>, на <b>${Math.round((1 - point[1]) * 100)}%</b> за <b>Власть</b> и на <b>${Math.round(point[1] * 100)}%</b> за <b>Свободу</b>`, parse_mode: 'HTML' }]);
-        // calls.push([chatId, 'sendPhoto', { chat_id: chatId, photo: `${publicUrlBase}results/${Math.round(point[0] * 100)}-${Math.round(point[1] * 100)}.png` }]);
+        calls.push([chatId, 'sendMessage', { chat_id: chatId, text: `Твой результат на <b>${Math.round((1 - point[0]) * 100)}%</b> за <b>Равенство</b> и на <b>${Math.round(point[0] * 100)}%</b> за <b>Рынки</b>, на <b>${Math.round((1 - point[1]) * 100)}%</b> за <b>Власть</b> и на <b>${Math.round(point[1] * 100)}%</b> за <b>Свободу</b>`, parse_mode: 'HTML' }]);
+        calls.push([chatId, 'sendPhoto', { chat_id: chatId, photo: `${publicUrlBase}results/${Math.round(point[0] * 100)}-${Math.round(point[1] * 100)}.png` }]);
     } else if (activeQuestionId <= state.limit.questionId) {
         const { text, reply_markup } = getQuestionMessage(state, update, activeQuestionId);
         calls.push([chatId, 'sendMessage', { chat_id: chatId, text, reply_markup }]);
@@ -161,63 +136,51 @@ function doSendQuestionOrResults(state, update, calls) {
     }
 }
 
-function doSendError(state, update, calls) {
-    const chatId = getChatId(state, update);
+function doSendError(update, calls) {
+    const chatId = getChatId(update);
     calls.push([chatId, 'sendMessage', { chat_id: chatId, text: messages.error }]);
 }
 
 
 
 function initialState() {
-    return { lastUpdateId: 0, answers: {}, limit: { questionId: 0, nextQuestionId: 0, nextTime: null } };
+    return {
+        lastUpdateId: 0,
+        answers: {},
+        admin: new Array(questions.length).fill(null),
+        limit: { questionId: 0, nextQuestionId: 0, nextTime: null }
+    };
 }
 
 function processUpdates(updates, state, calls) {
     if (!updates.ok) { return; }
 
     for (let i = 0; i < updates.result.length; i++) {
-        const update = updates.result[i], chatId = getChatId(state, update);
+        const update = updates.result[i], chatId = getChatId(update);
         state.lastUpdateId = Math.max(state.lastUpdateId, update.update_id);
         if (!chatId || chatId < 0) { continue; }
 
         try {
-            doAnswerCallback(state, update, calls);
-            doWelcome(state, update, calls);
+            doAnswerCallback(update, calls);
+            doWelcome(update, calls);
             doProcessAnswer(state, update, calls);
             doSendQuestionOrResults(state, update, calls);
         } catch (e) {
-            doSendError(state, update, calls);
+            doSendError(update, calls);
         }
     }
 }
 
-function processLimits() {
-    //         if (state.maxAvailableQuestionId === questions.length) { return; }
-    //         for (let userId in state.answers) {
-    //             if (userId === 'admin') { continue; }
-    //             if (state.answers[userId][state.maxAvailableQuestionId] !== null) {
-    //                 sendQuestion(calls, userId, state.maxAvailableQuestionId + 1);
-    //             }
-    //         }
-    //         state.maxAvailableQuestionId++;
-    //         state.nextSyncAt = 0;
-}
+// function processLimits() {
+//     if (state.maxAvailableQuestionId === questions.length) { return; }
+//     for (let userId in state.answers) {
+//         if (userId === 'admin') { continue; }
+//         if (state.answers[userId][state.maxAvailableQuestionId] !== null) {
+//             sendQuestion(calls, userId, state.maxAvailableQuestionId + 1);
+//         }
+//     }
+//     state.maxAvailableQuestionId++;
+//     state.nextSyncAt = 0;
+// }
 
 module.exports = { initialState, processUpdates };
-
-
-// set({ users: new Array(count === 0 ? 0 : count - 1).fill().map(() => ([Math.random(), Math.random()])), admin: [Math.random(), Math.random()] });
-
-// set({
-//     questions: {
-//         last: "Все люди — независимо от таких факторов, как культура или сексуальная ориентация— должны рассматриваться как равные?",
-//         lastAnswers: { "-1": 10, "-0.5": 100, "0": 12, "0.5": 1342, "1": 2 },
-//         current: "Все люди — независимо от таких факторов, как культура или сексуальная ориентация— должны рассматриваться как равные?",
-//     }
-// });
-
-// set({
-//     questions: {
-//         current: "Все люди — независимо от таких факторов, как культура или сексуальная ориентация— должны рассматриваться как равные?",
-//     }
-// });
