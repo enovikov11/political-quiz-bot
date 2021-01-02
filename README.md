@@ -8,11 +8,14 @@ apt install -y docker.io git<br/>
 snap install --classic certbot<br/>
 certbot certonly --standalone<br/>
 git clone https://github.com/enovikov11/political-quiz-bot.git<br/>
-
+cd political-quiz-bot<br/>
+<br/>
 docker build -t user-result --file user-result.Dockerfile .<br/>
-
-docker run -dit --rm -p 443:443 -v /etc/letsencrypt/live/YOURDOMAIN/privkey.pem:/letsencrypt/privkey.pem:ro -v /etc/letsencrypt/live/YOURDOMAIN/cert.pem:/letsencrypt/cert.pem:ro user-result
-
+<br/>
+docker run -dit --rm -p 443:443 -v /etc/letsencrypt/live/YOURDOMAIN/privkey.pem:/letsencrypt/privkey.pem:ro -v /etc/letsencrypt/live/YOURDOMAIN/cert.pem:/letsencrypt/cert.pem:ro user-result<br/>
+<br/>
+docker build -t bot --file bot.Dockerfile .<br/>
+<br/>
 </code>
 
 
