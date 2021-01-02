@@ -179,9 +179,11 @@ function getHtml(x, y) {
 }
 
 (() => {
-    const express = require('express'), https = require('https'), puppeteer = require('puppeteer'),
-        { key, cert } = require('../secret.json'),
-        app = express(), server = https.createServer({ key, cert }, app),
+    const express = require('express'), https = require('https'), puppeteer = require('puppeteer'), fs = require('fs'),
+        app = express(), server = https.createServer({
+            key: fs.readFileSync('/letsencrypt/privkey.pem', 'utf-8'),
+            cert: fs.readFileSync('/letsencrypt/cert.pem', 'utf-8')
+        }, app),
         browser = await puppeteer.launch({ args: ['--no-sandbox'] }), page = await browser.newPage(),
         queue = Promise.resolve();
 
