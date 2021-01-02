@@ -92,7 +92,7 @@ function doProcessAnswer(state, chatId, update, calls) {
     }]);
 
     if (chatId === adminChatId) {
-        state.nextAvalableUpdateAt = Date.now() + 30000;
+        state.nextAvailableUpdateAt = Date.now() + 30000;
     }
 }
 
@@ -120,7 +120,7 @@ function initialState() {
         lastUpdateId: 0,
         answers: {},
         maxAvailableQuestionId: 0,
-        nextAvalableUpdateAt: null
+        nextAvailableUpdateAt: null
     };
 }
 
@@ -144,8 +144,8 @@ function processUpdates(state, updates, calls) {
         }
     }
 
-    if (state.nextAvalableUpdateAt && state.nextAvalableUpdateAt < Date.now()) {
-        state.nextAvalableUpdateAt = null;
+    if (state.nextAvailableUpdateAt && state.nextAvailableUpdateAt < Date.now()) {
+        state.nextAvailableUpdateAt = null;
         const adminQuestionId = getActiveQuestionId(state, adminChatId);
         if (state.maxAvailableQuestionId !== adminQuestionId && state.maxAvailableQuestionId !== questions.length) {
             state.maxAvailableQuestionId === adminQuestionId;
@@ -162,4 +162,4 @@ function processUpdates(state, updates, calls) {
     return getResults(state);
 }
 
-module.exports = { initialState, processUpdates, getResults };
+module.exports = { initialState, processUpdates };

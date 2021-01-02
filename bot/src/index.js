@@ -1,34 +1,27 @@
 const fs = require('fs'),
-    { UPDATE_POLLING_INTERVAL_S, UPDATE_POLLING_TIMEOUT, stateFilename } = require('./settings'),
-    { apiRaw, apiEnqueue } = require('./api'), { processUpdates, getInitialState } = require('./logic'),
-    { updateResults } = require('./results');
+    { stateFilename } = require('./settings'), { apiRaw, apiEnqueue } = require('./api'),
+    { initialState, processUpdates } = require('./logic'), { updateResults } = require('./results');
 
-let state = getInitialState(), isRunning = true;
+let state = initialState(), isRunning = true;
 
 try {
     state = JSON.parse(fs.readFileSync(stateFilename, 'utf-8'));
 } catch (e) { }
 
 (async () => {
-    state.nextSyncAt = 0;
-    updateResults(state);
     while (isRunning) {
         const updates = await apiRaw('getUpdates', {
-            offset: state.offset, timeout: UPDATE_POLLING_INTERVAL_S, allowed_updates: ['message', 'callback_query']
-        }, UPDATE_POLLING_TIMEOUT);
+            offset: state.offset, timeout: 15, allowed_updates: ['message', 'callback_query']
+        }, 30000);
 
         let calls = [];
-        processUpdates(updates, state, calls);
+        const results = processUpdates(updates, state, calls);
         for (let i = 0; i < calls.length; i++) {
             apiEnqueue(...calls[i]);
         }
-        updateResults(state);
+        updateResults(state, results);
     }
     process.exit(0);
 })().catch(console.error);
 
 process.on('SIGINT', () => { isRunning = false; });
-
-// если просрочено, обновить state
-// processState
-// processUpdates
