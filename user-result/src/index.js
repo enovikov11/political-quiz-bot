@@ -178,7 +178,7 @@ function getHtml(x, y) {
 </html>`;
 }
 
-(() => {
+(async () => {
     const express = require('express'), https = require('https'), puppeteer = require('puppeteer'), fs = require('fs'),
         app = express(), server = https.createServer({
             key: fs.readFileSync('/letsencrypt/privkey.pem', 'utf-8'),
