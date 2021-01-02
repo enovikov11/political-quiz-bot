@@ -1,5 +1,5 @@
 const { stateFilename } = require('./settings'),
-    express = require('express'), https = require('https'), ws = require('ws'),
+    express = require('express'), https = require('https'), ws = require('ws'), fs = require('fs'),
     app = express(), server = https.createServer({
         key: fs.readFileSync('/letsencrypt/privkey.pem', 'utf-8'),
         cert: fs.readFileSync('/letsencrypt/cert.pem', 'utf-8')
