@@ -14,8 +14,9 @@ docker build -t user-result --file user-result.Dockerfile .<br/>
 <br/>
 docker run -dit --rm -p 443:443 -v /etc/letsencrypt/live/YOURDOMAIN/privkey.pem:/letsencrypt/privkey.pem:ro -v /etc/letsencrypt/live/YOURDOMAIN/cert.pem:/letsencrypt/cert.pem:ro user-result<br/>
 <br/>
-docker build -t bot --file bot.Dockerfile .<br/>
+docker build -t political-quiz-bot --file bot.Dockerfile .<br/>
 <br/>
+docker run -it --rm -p 443:443 -v /etc/letsencrypt/live/YOURDOMAIN/privkey.pem:/letsencrypt/privkey.pem:ro -v /etc/letsencrypt/live/YOURDOMAIN/cert.pem:/letsencrypt/cert.pem:ro /root/data:/app/data /root/secret.json:/app/secret.json political-quiz-bot<br/>
 </code>
 
 
