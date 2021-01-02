@@ -16,7 +16,7 @@ async function apiRaw(method, data, timeout = 2000, retries = 1) {
         return response;
     } else if (retries > 0) {
         await new Promise(res => setTimeout(res, 4000));
-        return await apiRaw(method, data, retries - 1);
+        return await apiRaw(method, data, timeout, retries - 1);
     } else {
         return { ok: false };
     }

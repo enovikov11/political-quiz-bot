@@ -1,5 +1,5 @@
 const fs = require('fs'),
-    { UPDATE_POLLING_INTERVAL_S, UPDATE_POLLING_TIMEOUT_MS, stateFilename } = require('./settings'),
+    { UPDATE_POLLING_INTERVAL_S, UPDATE_POLLING_TIMEOUT, stateFilename } = require('./settings'),
     { apiRaw, apiEnqueue } = require('./api'), { processUpdates, getInitialState } = require('./logic'),
     { updateResults } = require('./results');
 
@@ -15,7 +15,7 @@ try {
     while (isRunning) {
         const updates = await apiRaw('getUpdates', {
             offset: state.offset, timeout: UPDATE_POLLING_INTERVAL_S, allowed_updates: ['message', 'callback_query']
-        }, UPDATE_POLLING_TIMEOUT_MS);
+        }, UPDATE_POLLING_TIMEOUT);
 
         let calls = [];
         processUpdates(updates, state, calls);
