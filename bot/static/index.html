@@ -155,7 +155,8 @@
             <svg width="1000" height="1000" viewBox="0 0 1000 1000" class="results-data-svg">
                 <line x1="0" y1="498" x2="1000" y2="498" stroke="white" stroke-width="4" />
                 <line x1="498" y1="0" x2="498" y2="1000" stroke="white" stroke-width="4" />
-
+            </svg>
+            <svg width="1000" height="1000" viewBox="0 0 1000 1000" class="results-data-svg" style="z-index: 100;">
                 <mask id="data-circles" />
 
                 <g mask="url(#data-circles)">
@@ -321,12 +322,6 @@
             }
         }
 
-        function setOne(x, y) {
-            dataCircles.innerHTML =
-                [[0, 0], [1, 0], [0, 1], [1, 1]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="0.01" transform="scale(1000)" fill="white"/>`) +
-                `<circle cx="${x / 100}" cy="${y / 100}" r="${1 / 35}" transform="scale(1000)" fill="white"/>`;
-        }
-
         const ws = new WebSocket(location.href.replace(/^http/, 'ws'));
 
         ws.onclose = () => setTimeout(() => location.reload(), 2000);
@@ -337,6 +332,8 @@
                 set(result);
             } catch (e) { }
         };
+
+        set({});
     </script>
 </body>
 

@@ -90,8 +90,9 @@ function getHtml(x, y) {
             <svg width="1000" height="1000" viewBox="0 0 1000 1000" class="results-data-svg">
                 <line x1="0" y1="498" x2="1000" y2="498" stroke="white" stroke-width="4" />
                 <line x1="498" y1="0" x2="498" y2="1000" stroke="white" stroke-width="4" />
-
-                <mask id="data-circles">${circlesData}</mask>
+            </svg>
+            <svg width="1000" height="1000" viewBox="0 0 1000 1000" class="results-data-svg" style="z-index: 100;">
+                <mask id="data-circles" />
 
                 <g mask="url(#data-circles)">
                     <rect x="0" y="0" width="500" height="500" fill="#FF2A31" />

@@ -19,9 +19,6 @@ module.exports = {
     minQuestionsResult: 30
 };
 
-// FIXME
-const debugShrink = true;
-if (debugShrink) {
-    module.exports.questions = module.exports.questions.splice(48)
-    module.exports.minQuestionsResult = 2;
-}
+// DELETE AFTER DEBUG
+// module.exports.questions = module.exports.questions.splice(48)
+// module.exports.minQuestionsResult = 2;

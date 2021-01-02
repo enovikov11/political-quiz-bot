@@ -30,7 +30,7 @@ function getResults(state) {
             users: Object.values(state.answers)
                 .map(getUserPoint)
                 .filter(Boolean),
-            admin: getUserPoint(state[adminChatId])
+            admin: getUserPoint(state.answers[adminChatId])
         }
     } else {
         const questionsResult = {};
@@ -46,9 +46,10 @@ function getResults(state) {
 }
 
 function getQuestionMessage(state, chatId, questionId) {
+    const answer = state.answers[chatId][questionId];
     return {
         text: `${messages.question} ${questionId + 1} из ${questions.length}: ${questions[questionId].question}` +
-            state.answers[chatId] === null ? '' : `\n\n${messages.yourAnswer}: ${messages[state.answers[chatId][questionId]]}`,
+            (answer === null ? '' : `\n\n${messages.yourAnswer}: ${messages[answer]}`),
         reply_markup: {
             inline_keyboard: [
                 ['-1', '-0.5', '0', '0.5', '1'].map(effect => ({ text: buttons[effect], callback_data: `answer${questionId}|${effect}` }))
@@ -63,7 +64,8 @@ function getActiveQuestionId(state, chatId) {
             return i;
         }
     }
-    return state[chatId].length;
+
+    return state.answers[chatId].length;
 }
 
 function doAnswerCallback(chatId, update, calls) {
@@ -81,7 +83,7 @@ function doWelcome(chatId, update, calls) {
 function doProcessAnswer(state, chatId, update, calls) {
     if (!/^answer\d+\|(-1|-0\.5|0|0\.5|1)$/.test(update?.callback_query?.data || '')) { return; }
     const [questionId, answerValue] = update?.callback_query?.data.replace('answer', '').split('|').map(n => +n);
-    state.answers[chatId] = answerValue;
+    state.answers[chatId][questionId] = String(answerValue);
 
     const { text, reply_markup } = getQuestionMessage(state, chatId, questionId);
     calls.push([chatId, 'editMessageText', {
@@ -99,7 +101,7 @@ function doProcessAnswer(state, chatId, update, calls) {
 function doSendNext(state, chatId, calls) {
     const activeQuestionId = getActiveQuestionId(state, chatId);
     if (activeQuestionId === questions.length) {
-        const point = getUserPoint(), x = Math.round(point[0] * 100), y = Math.round(point[1] * 100);
+        const point = getUserPoint(state.answers[chatId]), x = Math.round(point[0] * 100), y = Math.round(point[1] * 100);
         calls.push([chatId, 'sendMessage', { chat_id: chatId, text: messages.description, parse_mode: 'HTML' }]);
         calls.push([chatId, 'sendMessage', { chat_id: chatId, text: `Твой результат на <b>${100 - x}%</b> за <b>Равенство</b> и на <b>${x}</b> за <b>Рынки</b>, на <b>${100 - y}</b> за <b>Власть</b> и на <b>${y}</b> за <b>Свободу</b>`, parse_mode: 'HTML' }]);
         calls.push([chatId, 'sendPhoto', { chat_id: chatId, photo: `${userResultBaseUrl}results/${x}-${y}.png` }]);
@@ -140,6 +142,7 @@ function processUpdates(state, updates, calls) {
             doProcessAnswer(state, chatId, update, calls);
             doSendNext(state, chatId, calls);
         } catch (e) {
+            console.error(JSON.stringify(e));
             doSendError(chatId, calls);
         }
     }
@@ -147,13 +150,16 @@ function processUpdates(state, updates, calls) {
     if (state.nextAvailableUpdateAt && state.nextAvailableUpdateAt < Date.now()) {
         state.nextAvailableUpdateAt = null;
         const adminQuestionId = getActiveQuestionId(state, adminChatId);
-        if (state.maxAvailableQuestionId !== adminQuestionId && state.maxAvailableQuestionId !== questions.length) {
-            state.maxAvailableQuestionId === adminQuestionId;
 
-            for (let chatId in state.answers) {
-                if (state.answers[chatId][state.maxAvailableQuestionId - 1] !== null) {
-                    const { text, reply_markup } = getQuestionMessage(state, chatId, state.maxAvailableQuestionId);
-                    calls.push([chatId, 'sendMessage', { chat_id: chatId, text, reply_markup }]);
+        if (state.maxAvailableQuestionId !== adminQuestionId) {
+            state.maxAvailableQuestionId = adminQuestionId;
+
+            if (state.maxAvailableQuestionId !== questions.length) {
+                for (let chatId in state.answers) {
+                    if (state.answers[chatId][state.maxAvailableQuestionId - 1] !== null) {
+                        const { text, reply_markup } = getQuestionMessage(state, chatId, state.maxAvailableQuestionId);
+                        calls.push([chatId, 'sendMessage', { chat_id: chatId, text, reply_markup }]);
+                    }
                 }
             }
         }
