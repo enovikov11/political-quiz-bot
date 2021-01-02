@@ -1,0 +1,24 @@
+{
+    "name": "political-quiz-bot-user-result",
+    "private": true,
+    "version": "1.0.0",
+    "description": "Based on https://github.com/8values/8values.github.io https://github.com/8values-ru/8values-ru.github.io",
+    "main": "./src/index.js",
+    "scripts": {
+        "start": "node ./src"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/enovikov11/political-quiz-bot.git"
+    },
+    "author": "",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/enovikov11/political-quiz-bot/issues"
+    },
+    "homepage": "https://github.com/enovikov11/political-quiz-bot#readme",
+    "dependencies": {
+        "express": "^4.17.1",
+        "puppeteer": "^5.5.0"
+    }
+}

@@ -1,6 +1,2 @@
 .DS_Store
-node_modules
-temp
-secret
-data
-results
+secret.json
