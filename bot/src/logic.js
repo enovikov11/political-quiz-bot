@@ -1,4 +1,4 @@
-const { messages, buttons, questions, userResultBaseUrl, adminChatId } = require('./settings');
+const { adminChatId, userResultBaseUrl, messages, buttons, questions, minQuestionsResult } = require('./settings');
 
 function getUserPoint(answers) {
     let x = 0, xMax = 0, y = 0, yMax = 0, count = 0;
@@ -90,6 +90,10 @@ function doProcessAnswer(state, chatId, update, calls) {
         text,
         reply_markup
     }]);
+
+    if (chatId === adminChatId) {
+        state.nextAvalableUpdateAt = Date.now() + 30000;
+    }
 }
 
 function doSendNext(state, chatId, calls) {
@@ -114,10 +118,9 @@ function doSendError(chatId, calls) {
 function initialState() {
     return {
         lastUpdateId: 0,
-        nextSyncAt: 0,
-
+        answers: {},
         maxAvailableQuestionId: 0,
-        answers: {}
+        nextAvalableUpdateAt: null
     };
 }
 
@@ -140,29 +143,23 @@ function processUpdates(state, updates, calls) {
             doSendError(chatId, calls);
         }
     }
+
+    if (state.nextAvalableUpdateAt && state.nextAvalableUpdateAt < Date.now()) {
+        state.nextAvalableUpdateAt = null;
+        const adminQuestionId = getActiveQuestionId(state, adminChatId);
+        if (state.maxAvailableQuestionId !== adminQuestionId && state.maxAvailableQuestionId !== questions.length) {
+            state.maxAvailableQuestionId === adminQuestionId;
+
+            for (let chatId in state.answers) {
+                if (state.answers[chatId][state.maxAvailableQuestionId - 1] !== null) {
+                    const { text, reply_markup } = getQuestionMessage(state, chatId, state.maxAvailableQuestionId);
+                    calls.push([chatId, 'sendMessage', { chat_id: chatId, text, reply_markup }]);
+                }
+            }
+        }
+    }
+
+    return getResults(state);
 }
 
 module.exports = { initialState, processUpdates, getResults };
-
-
-/*
-function processSync(state, calls) {
-    if (state.nextSyncAt > Date.now()) { return; }
-    state.nextSyncAt = Date.now() + RESYNC_INTERVAL;
-
-    if (!state.answers[adminChatId]) { return; }
-    const adminQuestionId = getActiveQuestionId(state, adminChatId);
-    if (state.maxAvailableQuestionId === adminQuestionId) { return; }
-    state.maxAvailableQuestionId = adminQuestionId;
-
-    if (state.maxAvailableQuestionId === questions.length) { return; }
-
-    for (let chatId in state.answers) {
-        const userState = state.answers[chatId];
-        if (userState[state.maxAvailableQuestionId - 1] !== null) {
-            const { text, reply_markup } = getQuestionMessage(userState, state.maxAvailableQuestionId);
-            calls.push([chatId, 'sendMessage', { chat_id: chatId, text, reply_markup }]);
-        }
-    }
-}
-*/

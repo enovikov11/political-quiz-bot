@@ -5,8 +5,6 @@ const { messages, buttons, questions } = YAML.parse(fs.readFileSync('./src/setti
 const { apiKey, adminChatId, userResultBaseUrl } = require('../secret.json');
 
 module.exports = {
-    RESYNC_INTERVAL: 30000,
-
     apiLogFilename: './data/api.json.log',
     stateFilename: './data/state.json',
 
