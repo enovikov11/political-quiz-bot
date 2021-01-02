@@ -1,4 +1,4 @@
-const { messages, buttons, questions, adminChatId, minQuestionsResult, RESYNC_INTERVAL } = require('./settings');
+const { messages, buttons, questions, userResultBaseUrl, adminChatId } = require('./settings');
 
 function getUserPoint(answers) {
     let x = 0, xMax = 0, y = 0, yMax = 0, count = 0;
@@ -27,8 +27,10 @@ function getDivision(state, questionId) {
 function getResults(state) {
     if (state.maxAvailableQuestionId === questions.length) {
         return {
-            users: Object.keys(state.answers).map(getUserPoint).filter(Boolean),
-            admin: state[adminChatId] ? getUserPoint(state[adminChatId]) : null
+            users: Object.values(state.answers)
+                .map(getUserPoint)
+                .filter(Boolean),
+            admin: getUserPoint(state[adminChatId])
         }
     } else {
         const questions = {};
@@ -43,20 +45,10 @@ function getResults(state) {
     }
 }
 
-function getActiveQuestionId(state, chatId) {
-    for (let i = 0; i < state[chatId].length; i++) {
-        if (state[chatId][i] === null) {
-            return i;
-        }
-    }
-
-    return state[chatId].length;
-}
-
 function getQuestionMessage(state, chatId, questionId) {
     return {
         text: `${messages.question} ${questionId + 1} из ${questions.length}: ${questions[questionId].question}` +
-            (state[chatId][questionId] === null ? '' : `\n\n${messages.yourAnswer}: ${messages[state[chatId][questionId]]}`),
+            state.answers[chatId] === null ? '' : `\n\n${messages.yourAnswer}: ${messages[state.answers[chatId][questionId]]}`,
         reply_markup: {
             inline_keyboard: [
                 ['-1', '-0.5', '0', '0.5', '1'].map(effect => ({ text: buttons[effect], callback_data: `answer${questionId}|${effect}` }))
@@ -65,6 +57,14 @@ function getQuestionMessage(state, chatId, questionId) {
     };
 }
 
+function getActiveQuestionId(state, chatId) {
+    for (let i = 0; i < state.answers[chatId].length; i++) {
+        if (state.answers[chatId][i] === null) {
+            return i;
+        }
+    }
+    return state[chatId].length;
+}
 
 function doAnswerCallback(chatId, update, calls) {
     if (update?.callback_query?.id) {
@@ -79,29 +79,28 @@ function doWelcome(chatId, update, calls) {
 }
 
 function doProcessAnswer(state, chatId, update, calls) {
-    if (/^answer\d+\|(-1|-0\.5|0|0\.5|1)$/.test(update?.callback_query?.data || '')) {
-        const [questionId, answerValue] = update?.callback_query?.data.replace('answer', '').split('|', 2).map(n => +n);
-        userState[questionId] = answerValue;
+    if (!/^answer\d+\|(-1|-0\.5|0|0\.5|1)$/.test(update?.callback_query?.data || '')) { return; }
+    const [questionId, answerValue] = update?.callback_query?.data.replace('answer', '').split('|').map(n => +n);
+    state.answers[chatId] = answerValue;
 
-        const { text, reply_markup } = getQuestionMessage(userState, questionId);
-        calls.push([chatId, 'editMessageText', {
-            chat_id: chatId,
-            message_id: update?.callback_query?.message?.message_id,
-            text,
-            reply_markup
-        }]);
-    }
+    const { text, reply_markup } = getQuestionMessage(state, chatId, questionId);
+    calls.push([chatId, 'editMessageText', {
+        chat_id: chatId,
+        message_id: update?.callback_query?.message?.message_id,
+        text,
+        reply_markup
+    }]);
 }
 
-function doSendQuestionOrResults(state, chatId, update, calls) {
-    const chatId = getChatId(update), userState = getUserState(state, update), activeQuestionId = getActiveQuestionId(userState);
+function doSendNext(state, chatId, calls) {
+    const activeQuestionId = getActiveQuestionId(state, chatId);
     if (activeQuestionId === questions.length) {
-        const point = getUserPoint(answers);
+        const point = getUserPoint(), x = Math.round(point[0] * 100), y = Math.round(point[1] * 100);
         calls.push([chatId, 'sendMessage', { chat_id: chatId, text: messages.description, parse_mode: 'HTML' }]);
-        calls.push([chatId, 'sendMessage', { chat_id: chatId, text: `Твой результат на <b>${Math.round((1 - point[0]) * 100)}%</b> за <b>Равенство</b> и на <b>${Math.round(point[0] * 100)}%</b> за <b>Рынки</b>, на <b>${Math.round((1 - point[1]) * 100)}%</b> за <b>Власть</b> и на <b>${Math.round(point[1] * 100)}%</b> за <b>Свободу</b>`, parse_mode: 'HTML' }]);
-        calls.push([chatId, 'sendPhoto', { chat_id: chatId, photo: `${publicUrlBase}results/${Math.round(point[0] * 100)}-${Math.round(point[1] * 100)}.png` }]);
-    } else if (activeQuestionId <= state.limit.questionId) {
-        const { text, reply_markup } = getQuestionMessage(state, update, activeQuestionId);
+        calls.push([chatId, 'sendMessage', { chat_id: chatId, text: `Твой результат на <b>${100 - x}%</b> за <b>Равенство</b> и на <b>${x}</b> за <b>Рынки</b>, на <b>${100 - y}</b> за <b>Власть</b> и на <b>${y}</b> за <b>Свободу</b>`, parse_mode: 'HTML' }]);
+        calls.push([chatId, 'sendPhoto', { chat_id: chatId, photo: `${userResultBaseUrl}results/${x}-${y}.png` }]);
+    } else if (activeQuestionId <= state.maxAvailableQuestionId) {
+        const { text, reply_markup } = getQuestionMessage(state, chatId, activeQuestionId);
         calls.push([chatId, 'sendMessage', { chat_id: chatId, text, reply_markup }]);
     } else {
         calls.push([chatId, 'sendMessage', { chat_id: chatId, text: messages.wait }]);
@@ -111,7 +110,6 @@ function doSendQuestionOrResults(state, chatId, update, calls) {
 function doSendError(chatId, calls) {
     calls.push([chatId, 'sendMessage', { chat_id: chatId, text: messages.error }]);
 }
-
 
 function initialState() {
     return {
@@ -123,34 +121,37 @@ function initialState() {
     };
 }
 
-function processUpdates(updates, state, calls) {
+function processUpdates(state, updates, calls) {
     if (!updates.ok) { return; }
 
     for (let i = 0; i < updates.result.length; i++) {
-        const update = updates.result[i], chatId = getChatId(update);
+        const update = updates[i], chatId = update?.message?.chat?.id || update?.callback_query?.message?.chat?.id;
         state.lastUpdateId = Math.max(state.lastUpdateId, update.update_id);
 
         if (!chatId || chatId < 0) { continue; }
         state.answers[chatId] = state.answers[chatId] || new Array(questions.length).fill(null);
-        const userState = state.answers[chatId];
 
         try {
-            doAnswerCallback(update, chatId, calls);
-            doWelcome(update, chatId, calls);
-            doProcessAnswer(update, chatId, userState, calls);
-            doSendQuestionOrResults(state, update, calls);
+            doAnswerCallback(chatId, update, calls);
+            doWelcome(chatId, update, calls);
+            doProcessAnswer(state, chatId, update, calls);
+            doSendNext(state, chatId, calls);
         } catch (e) {
             doSendError(chatId, calls);
         }
     }
 }
 
+module.exports = { initialState, processUpdates, getResults };
+
+
+/*
 function processSync(state, calls) {
     if (state.nextSyncAt > Date.now()) { return; }
     state.nextSyncAt = Date.now() + RESYNC_INTERVAL;
 
     if (!state.answers[adminChatId]) { return; }
-    const adminQuestionId = getActiveQuestionId(state.answers[adminChatId]);
+    const adminQuestionId = getActiveQuestionId(state, adminChatId);
     if (state.maxAvailableQuestionId === adminQuestionId) { return; }
     state.maxAvailableQuestionId = adminQuestionId;
 
@@ -164,6 +165,4 @@ function processSync(state, calls) {
         }
     }
 }
-
-
-module.exports = { initialState, processUpdates, processSync, getResults };
+*/

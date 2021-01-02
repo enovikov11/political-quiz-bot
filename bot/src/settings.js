@@ -2,7 +2,7 @@ const fs = require('fs');
 const YAML = require('yaml');
 
 const { messages, buttons, questions } = YAML.parse(fs.readFileSync('./src/settings.yaml', 'utf8'));
-const { apiKey, adminChatId, userResultBaseUrl } = require('./secret.json');
+const { apiKey, adminChatId, userResultBaseUrl } = require('../secret.json');
 
 module.exports = {
     RESYNC_INTERVAL: 30000,

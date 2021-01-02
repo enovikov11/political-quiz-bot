@@ -28,3 +28,7 @@ try {
 })().catch(console.error);
 
 process.on('SIGINT', () => { isRunning = false; });
+
+// если просрочено, обновить state
+// processState
+// processUpdates
