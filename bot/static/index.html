@@ -293,7 +293,7 @@
                     lastAnswers.style.display = 'none';
                 }
             } else if (data.users) {
-                const count = data.users.length + (data.admin ? 1 : 0), size = 1 / (35 + Math.log10(Math.min(1600, count)) * 10), quadrants = {},
+                const count = data.users.length, size = 1 / (35 + Math.log10(Math.min(1600, count)) * 10), quadrants = {},
                     filteredUsers = count < 1600 ? data.users : data.users.filter(([x, y]) => {
                         const id = 40 * Math.floor((40 - 1e-10) * x) + Math.floor((40 - 1e-10) * y);
                         quadrants[id] = (quadrants[id] || 0) + 1;
