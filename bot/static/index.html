@@ -246,8 +246,10 @@
     </div>
     <div class="questions">
         <div class="question-current"></div>
-        <div class="question-last"></div>
-        <div class="question-last-answers"></div>
+        <div class="question-last">
+            <div class="question-last-text"></div>
+            <div class="question-last-answers"></div>
+        </div>
     </div>
     <span class="message-big">Пишите в телеграм боту @max_katz_bot</span>
     <span class="message-small">Запрогал Евгений Новиков github.com/enovikov11 Основано на тесте 8values</span>
@@ -256,7 +258,8 @@
         const admin = document.querySelector('.admin'), resultsData = document.querySelector('.results-data'),
             messageCount = document.querySelector('.message-count'), dataCircles = document.querySelector('#data-circles'),
             results = document.querySelector('.results'), questions = document.querySelector('.questions'),
-            questionLast = document.querySelector('.question-last'), questionCurrent = document.querySelector('.question-current'),
+            questionLast = document.querySelector('.question-last'), questionLastText = document.querySelector('.question-last-text'),
+            questionCurrent = document.querySelector('.question-current'),
             lastAnswers = document.querySelector('.question-last-answers');
         admin.style.display = 'none';
 
@@ -267,7 +270,7 @@
                 questions.style.display = '';
 
                 if (data.questions.last) {
-                    questionLast.innerText = data.questions.last;
+                    questionLastText.innerText = data.questions.last;
                     questionLast.style.display = '';
                 } else {
                     questionLast.style.display = 'none';

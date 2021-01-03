@@ -25,7 +25,7 @@ function getDivision(state, questionId) {
 }
 
 function getResults(state) {
-    if (state.maxAvailableQuestionId === questions.length) {
+    if (state.maxAvailableQuestionId === questions.length && state.nextAvailableUpdateAt === null) {
         return {
             users: Object.values(state.answers)
                 .map(getUserPoint)
@@ -39,7 +39,9 @@ function getResults(state) {
             questionsResult.last = questions[state.maxAvailableQuestionId - 1].question;
             questionsResult.lastAnswers = getDivision(state, state.maxAvailableQuestionId - 1);
         }
-        questionsResult.current = questions[state.maxAvailableQuestionId].question;
+        if (state.maxAvailableQuestionId !== questions.length) {
+            questionsResult.current = questions[state.maxAvailableQuestionId].question;
+        }
 
         return { questions: questionsResult };
     }
@@ -147,8 +149,6 @@ function processUpdates(state, updates, calls) {
             doSendError(chatId, calls);
         }
     }
-
-    return getResults(state);
 }
 
 function processRebuild(state, calls) {
@@ -165,10 +165,10 @@ function processRebuild(state, calls) {
                     calls.push([chatId, 'sendMessage', { chat_id: chatId, text, reply_markup }]);
                 }
             }
+        } else {
+            state.nextAvailableUpdateAt = Date.now() + 30000;
         }
     }
-
-    return getResults(state);
 }
 
-module.exports = { initialState, processUpdates, processRebuild };
+module.exports = { initialState, processUpdates, processRebuild, getResults };

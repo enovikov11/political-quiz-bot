@@ -1,6 +1,6 @@
 const fs = require('fs'),
     { stateFilename } = require('./settings'), { apiRaw, apiEnqueue } = require('./api'),
-    { initialState, processUpdates, processRebuild } = require('./logic'), { updateResults } = require('./results');
+    { initialState, processUpdates, processRebuild, getResults } = require('./logic'), { updateResults } = require('./results');
 
 let state = initialState();
 
@@ -15,11 +15,11 @@ try {
         }, 30000);
 
         let calls = [];
-        const results = processUpdates(state, updates, calls);
+        processUpdates(state, updates, calls);
         for (let i = 0; i < calls.length; i++) {
             apiEnqueue(calls[i]);
         }
-        updateResults(state, results);
+        updateResults(state, getResults(state));
     }
 })().catch(console.error);
 
@@ -30,6 +30,6 @@ setInterval(() => {
         for (let i = 0; i < calls.length; i++) {
             apiEnqueue(calls[i]);
         }
-        updateResults(state, results);
     }
-}, 1000);
+    updateResults(state, getResults(state));
+}, 5000);
