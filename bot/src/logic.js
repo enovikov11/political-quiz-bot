@@ -104,7 +104,7 @@ function doSendNext(state, chatId, calls) {
     if (activeQuestionId === questions.length) {
         const point = getUserPoint(state.answers[chatId]), x = Math.round(point[0] * 100), y = Math.round(point[1] * 100);
         calls.push([chatId, 'sendMessage', { chat_id: chatId, text: messages.description, parse_mode: 'HTML' }]);
-        calls.push([chatId, 'sendMessage', { chat_id: chatId, text: `Твой результат на <b>${100 - x}%</b> за <b>Равенство</b> и на <b>${x}</b> за <b>Рынки</b>, на <b>${100 - y}</b> за <b>Власть</b> и на <b>${y}</b> за <b>Свободу</b>`, parse_mode: 'HTML' }]);
+        calls.push([chatId, 'sendMessage', { chat_id: chatId, text: `Твой результат на <b>${100 - x}%</b> за <b>Равенство</b> и на <b>${x}%</b> за <b>Рынки</b>, на <b>${100 - y}%</b> за <b>Власть</b> и на <b>${y}%</b> за <b>Свободу</b>`, parse_mode: 'HTML' }]);
         calls.push([chatId, 'sendPhoto', { chat_id: chatId, photo: `${userResultBaseUrl}results/${x}-${y}.png` }]);
     } else if (activeQuestionId <= state.maxAvailableQuestionId) {
         const { text, reply_markup } = getQuestionMessage(state, chatId, activeQuestionId);
