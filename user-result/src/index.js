@@ -15,6 +15,7 @@ function getHtml(x, y) {
             height: 1080px;
             margin: 0;
             font-family: 'Jost';
+            background-color: lightblue;
         }
 
         .results {

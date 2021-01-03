@@ -77,6 +77,7 @@ function doAnswerCallback(chatId, update, calls) {
 function doWelcome(chatId, update, calls) {
     if (update?.message?.text === '/start') {
         calls.push([chatId, 'sendMessage', { chat_id: chatId, text: messages.welcome }]);
+        calls.push([chatId, 'wait', {}]);
     }
 }
 
@@ -147,19 +148,21 @@ function processUpdates(state, updates, calls) {
         }
     }
 
-    if (state.nextAvailableUpdateAt && state.nextAvailableUpdateAt < Date.now()) {
-        state.nextAvailableUpdateAt = null;
-        const adminQuestionId = getActiveQuestionId(state, adminChatId);
+    return getResults(state);
+}
 
-        if (state.maxAvailableQuestionId !== adminQuestionId) {
-            state.maxAvailableQuestionId = adminQuestionId;
+function processRebuild(state, calls) {
+    state.nextAvailableUpdateAt = null;
+    const adminQuestionId = getActiveQuestionId(state, adminChatId);
 
-            if (state.maxAvailableQuestionId !== questions.length) {
-                for (let chatId in state.answers) {
-                    if (state.answers[chatId][state.maxAvailableQuestionId - 1] !== null) {
-                        const { text, reply_markup } = getQuestionMessage(state, chatId, state.maxAvailableQuestionId);
-                        calls.push([chatId, 'sendMessage', { chat_id: chatId, text, reply_markup }]);
-                    }
+    if (state.maxAvailableQuestionId !== adminQuestionId) {
+        state.maxAvailableQuestionId = adminQuestionId;
+
+        if (state.maxAvailableQuestionId !== questions.length) {
+            for (let chatId in state.answers) {
+                if (state.answers[chatId][state.maxAvailableQuestionId - 1] !== null) {
+                    const { text, reply_markup } = getQuestionMessage(state, chatId, state.maxAvailableQuestionId);
+                    calls.push([chatId, 'sendMessage', { chat_id: chatId, text, reply_markup }]);
                 }
             }
         }
@@ -168,4 +171,4 @@ function processUpdates(state, updates, calls) {
     return getResults(state);
 }
 
-module.exports = { initialState, processUpdates };
+module.exports = { initialState, processUpdates, processRebuild };

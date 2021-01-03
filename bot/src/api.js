@@ -2,6 +2,11 @@ const fetch = require('node-fetch'), queues = {}, { apiBase, apiKey, apiLogFilen
     fs = require('fs'), fd = fs.openSync(apiLogFilename, 'a');
 
 async function apiRaw(method, data, timeout = 2000, retries = 1) {
+    if (method === 'wait') {
+        await new Promise(res => setTimeout(res, 300));
+        return {};
+    }
+
     const reqId = Date.now() + Math.random();
 
     fs.appendFile(fd, JSON.stringify({ reqId, requestMethod: method, requestData: data }) + '\n', () => { });
@@ -22,9 +27,9 @@ async function apiRaw(method, data, timeout = 2000, retries = 1) {
     }
 }
 
-function apiEnqueue(queue, method, data) {
+function apiEnqueue([queue, method, data]) {
     if (!queues[queue]) { queues[queue] = Promise.resolve(); }
-    queues[queue].then(async () => {
+    queues[queue] = queues[queue].then(async () => {
         await apiRaw(method, data);
     });
 }
