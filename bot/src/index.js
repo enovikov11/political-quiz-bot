@@ -26,7 +26,7 @@ try {
 setInterval(() => {
     if (state.nextAvailableUpdateAt && state.nextAvailableUpdateAt < Date.now()) {
         let calls = [];
-        const results = processRebuild(state, calls);
+        processRebuild(state, calls);
         for (let i = 0; i < calls.length; i++) {
             apiEnqueue(calls[i]);
         }

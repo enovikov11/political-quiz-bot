@@ -20,7 +20,11 @@ function getDivision(state, questionId) {
     Object.values(state.answers)
         .map(answers => String(answers[questionId]))
         .filter(Boolean)
-        .forEach(value => { results[value]++; });
+        .forEach(value => {
+            if (value in results) {
+                results[value]++;
+            }
+        });
     return results;
 }
 
@@ -171,4 +175,7 @@ function processRebuild(state, calls) {
     }
 }
 
-module.exports = { initialState, processUpdates, processRebuild, getResults };
+module.exports = {
+    getUserPoint, getDivision, getResults, getQuestionMessage, getActiveQuestionId, doAnswerCallback, doWelcome,
+    doProcessAnswer, doSendNext, doSendError, initialState, processUpdates, processRebuild
+};
