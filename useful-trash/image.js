@@ -8,7 +8,9 @@ async function state2buffer(state) {
                 </svg>`),
             blend: 'over'
         }])
-    .toBuffer();
+        .toBuffer();
 }
+
+//        buffer = await sharp('./demo-background.png').composite([{ input: buffer, blend: 'over' }]).toBuffer();
 
 module.exports = { state2buffer };

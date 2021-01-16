@@ -1,6 +1,6 @@
 version: "3"
 services:
-  image-rnd:
+  political-quiz-bot:
     build: .
     ports:
-      - 80:80
+      - 443:443

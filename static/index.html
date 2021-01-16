@@ -236,6 +236,19 @@
             document.body.innerHTML = '';
             location.reload();
         }
+
+        /*
+const ws = new WebSocket(location.href.replace(/^http/, 'ws'));
+
+        ws.onclose = () => setTimeout(() => location.reload(), 2000);
+        ws.onmessage = ({ data }) => {
+            try {
+                const result = JSON.parse(data);
+                console.log(result);
+                set(result);
+            } catch (e) { }
+        };
+        */
     </script>
 
 </body>
