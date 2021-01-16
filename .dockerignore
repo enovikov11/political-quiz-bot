@@ -1,5 +1,4 @@
 .DS_Store
-secret.json
-temp.md
 node_modules
-certs
+secret.json
+data
