@@ -173,7 +173,7 @@
             document.querySelector('.results-count').innerText = 'Всего пользователей: ' + usersCount.toLocaleString();
             document.querySelector('.results-count').style.display = usersCount === 0 ? 'none' : '';
 
-            document.querySelector('.results-svg').innerHTML = state?.results ? makeResultsSvg(state.results, 480) : '';
+            document.querySelector('.results-svg').innerHTML = state?.results ? makeResultsSvg(state.results) : '';
             document.querySelector('#results-admin').style.display = state?.results?.admin ? '' : 'none';
             document.querySelector('#results-admin').style.left = (-22.5 + state?.results?.admin[0] * 480) + 'px';
             document.querySelector('#results-admin').style.top = (-22.5 + state?.results?.admin[1] * 480) + 'px';
