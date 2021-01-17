@@ -44,7 +44,12 @@ const adminBroadcastDebounced = lodash.debounce(adminBroadcast, 10000, { maxWait
         for (let i = 0; i < calls.length; i++) {
             if (calls[i][0] !== '') {
                 if (calls[i][1] === 'sendPhoto') {
-                    results2buffer(getIndivisualResults(state, calls[i][2].chat_id), calls[i][2].chat_id).then(() => apiEnqueue(calls[i]))
+                    try {
+                        results2buffer(getIndivisualResults(state, calls[i][2].chat_id), calls[i][2].chat_id).then(() => apiEnqueue(calls[i]))
+                    } catch (e) {
+                        console.error(e)
+                    }
+
                 } else {
                     apiEnqueue(calls[i])
                 }
@@ -60,4 +65,5 @@ const adminBroadcastDebounced = lodash.debounce(adminBroadcast, 10000, { maxWait
             doUpdateResultDebounced();
         }
     }
+    process.exit(0);
 })().catch(console.error);
