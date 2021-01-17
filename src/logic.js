@@ -17,7 +17,7 @@ function getUserPoint(answers) {
 
 function getDivision(state, questionId) {
     const results = { "-1": 0, "-0.5": 0, "0": 0, "0.5": 0, "1": 0 };
-    Object.values(state.answers)
+    Object.values(state.users).map(({ answers }) => answers)
         .map(answers => String(answers[questionId]))
         .filter(Boolean)
         .forEach(value => {
@@ -48,7 +48,7 @@ function getResults(state) {
         const division = getDivision(state, state.adminStatus - 1);
         output.smallQuestion = {
             "number": state.adminStatus,
-            "text": questions[state.adminStatus - 1],
+            "text": questions[state.adminStatus - 1].question,
             "admin": String(state.users[adminChatId].answers[state.adminStatus - 1]),
             ...division
         };
@@ -57,7 +57,7 @@ function getResults(state) {
     if (state.adminStatus < questions.length - 1) {
         output.bigQuestion = {
             "number": state.adminStatus + 1,
-            "text": questions[state.adminStatus]
+            "text": questions[state.adminStatus].question
         };
     }
 
@@ -195,24 +195,4 @@ function processUpdates(state, updates, calls) {
     }
 }
 
-function processRebuild(state, calls) {
-    // state.nextAvailableUpdateAt = null;
-    // const adminQuestionId = getActiveQuestionId(state, adminChatId);
-
-    // if (state.maxAvailableQuestionId !== adminQuestionId) {
-    //     state.maxAvailableQuestionId = adminQuestionId;
-
-    //     if (state.maxAvailableQuestionId !== questions.length) {
-    //         for (let chatId in state.users) {
-    //             if (state.users[chatId].answers[state.maxAvailableQuestionId - 1] !== null) {
-    //                 const { text, reply_markup } = getQuestionMessage(state, chatId, state.maxAvailableQuestionId);
-    //                 calls.push([chatId, 'sendMessage', { chat_id: chatId, text, reply_markup }]);
-    //             }
-    //         }
-    //     } else {
-    //         state.nextAvailableUpdateAt = Date.now() + 30000;
-    //     }
-    // }
-}
-
-module.exports = { initialState, processUpdates, getQuestionMessage, getStatus };
+module.exports = { initialState, processUpdates, getQuestionMessage, getStatus, getResults };

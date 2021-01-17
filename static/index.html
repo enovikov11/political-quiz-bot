@@ -17,6 +17,8 @@
             height: 1080px;
             margin: 0;
             font-family: 'Jost';
+
+            background-color: lightgrey;
         }
 
         .background {
@@ -171,7 +173,7 @@
 
             // const usersCount = (state?.results?.admin ? 1 : 0) + (state?.results?.you ? 1 : 0) + (state?.results?.users?.length || 0);
             document.querySelector('.results-count').innerText = 'Всего пользователей: ' + (state?.results?.users?.length || 0).toLocaleString();
-            document.querySelector('.results-count').style.display = usersCount === 0 ? 'none' : '';
+            document.querySelector('.results-count').style.display = state?.results ? '' : 'none';
 
             document.querySelector('.results-svg').innerHTML = state?.results ? makeResultsSvg(state.results) : '';
             document.querySelector('#results-admin').style.display = state?.results?.admin ? '' : 'none';
@@ -184,18 +186,22 @@
             location.reload();
         }
 
-        /*
-const ws = new WebSocket(location.href.replace(/^http/, 'ws'));
+        function init() {
+            const ws = new WebSocket(location.href.replace(/^http/, 'ws'));
 
-        ws.onclose = () => setTimeout(() => location.reload(), 2000);
-        ws.onmessage = ({ data }) => {
-            try {
-                const result = JSON.parse(data);
-                console.log(result);
-                set(result);
-            } catch (e) { }
-        };
-        */
+            ws.onmessage = ({ data }) => {
+                try {
+                    const result = JSON.parse(data);
+                    console.log(result);
+                    show(result);
+                } catch (e) { }
+            };
+
+            ws.onclose = () => setTimeout(init, 3000);
+        }
+
+        show({});
+        init();
     </script>
 
 </body>

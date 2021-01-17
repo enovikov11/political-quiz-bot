@@ -5,7 +5,7 @@
   "description": "Based on https://github.com/8values/8values.github.io https://github.com/8values-ru/8values-ru.github.io",
   "main": "./src/index.js",
   "scripts": {
-    "start": "nodemon ./src",
+    "start": "node ./src",
     "serve-test": "serve",
     "test": "jest",
     "test-static": "node ./tests/static-test",
