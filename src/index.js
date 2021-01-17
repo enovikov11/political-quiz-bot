@@ -1,7 +1,7 @@
 const fs = require('fs'), lodash = require('lodash'),
     { stateFilename, adminChatId } = require('./settings'), { apiRaw, apiEnqueue } = require('./api'),
     { initialState, processUpdates, getQuestionMessage, getStatus, getResults } = require('./logic'),
-    { updateResults } = require('./results');
+    { updateResults } = require('./results'), { results2buffer } = require('./pm-results');
 
 let state = initialState();
 
