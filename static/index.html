@@ -169,8 +169,8 @@
 
             document.querySelector('#results-background').style.display = state.results ? '' : 'none';
 
-            const usersCount = (state?.results?.admin ? 1 : 0) + (state?.results?.you ? 1 : 0) + (state?.results?.users?.length || 0);
-            document.querySelector('.results-count').innerText = 'Всего пользователей: ' + usersCount.toLocaleString();
+            // const usersCount = (state?.results?.admin ? 1 : 0) + (state?.results?.you ? 1 : 0) + (state?.results?.users?.length || 0);
+            document.querySelector('.results-count').innerText = 'Всего пользователей: ' + (state?.results?.users?.length || 0).toLocaleString();
             document.querySelector('.results-count').style.display = usersCount === 0 ? 'none' : '';
 
             document.querySelector('.results-svg').innerHTML = state?.results ? makeResultsSvg(state.results) : '';
