@@ -1,4 +1,4 @@
-const { stateFilename } = require('./settings'),
+const { stateFilename, prefix } = require('./settings'),
     express = require('express'), https = require('https'), ws = require('ws'), fs = require('fs'),
     app = express(), server = https.createServer({
         // DELETE AFTER DEBUG
@@ -11,9 +11,14 @@ const { stateFilename } = require('./settings'),
 
 let jsonResults = '{}';
 
-app.use(express.static('./static'));
+app.use(`/${prefix}`, express.static('./static'));
 
-wss.on('connection', conn => {
+wss.on('connection', (conn, req) => {
+    if (req.url !== `/${prefix}/`) {
+        try { conn.close() } catch (e) { }
+        return;
+    }
+
     connections.add(conn);
     try { conn.send(jsonResults) } catch (e) { }
     conn.on('close', () => { connections.delete(conn); })
