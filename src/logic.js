@@ -28,24 +28,36 @@ function getDivision(state, questionId) {
     return results;
 }
 
-function getResults(state, chatId) {
+function getIndivisualResults(state, chatId) {
+    const output = {
+        users: Object.values(state.users).map(({ answers }) => answers).map(getUserPoint).filter(Boolean),
+        admin: getUserPoint(state.answers[adminChatId]),
+        you = getUserPoint(state.answers[chatId])
+    }
+
+    if (!output.admin) {
+        output.admin = undefined;
+    }
+
+    if (!output.you) {
+        output.you = undefined;
+    }
+
+    return output;
+}
+
+function getResults(state) {
     if (state.adminStatus === 'start') {
         return {};
     }
 
     if (state.adminStatus === 'end') {
-        const output = {
+        return {
             results: {
                 users: Object.values(state.users).map(({ answers }) => answers).map(getUserPoint).filter(Boolean),
                 admin: getUserPoint(state.answers[adminChatId])
             }
         };
-
-        if (chatId) {
-            output.you = getUserPoint(state.answers[chatId])
-        }
-
-        return output;
     }
 
     const output = {};
@@ -199,4 +211,4 @@ function processUpdates(state, updates, calls) {
     }
 }
 
-module.exports = { initialState, processUpdates, getQuestionMessage, getStatus, getResults };
+module.exports = { initialState, processUpdates, getQuestionMessage, getStatus, getResults, getIndivisualResults };
