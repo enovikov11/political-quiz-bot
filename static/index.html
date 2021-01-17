@@ -187,9 +187,10 @@
         }
 
         function init() {
+            if (!WebSocket) { return; }
             const ws = new WebSocket(location.href.replace(/^http/, 'ws'));
 
-            ws.onmessage = ({ data }) => {
+            ws.onmessage = function ({ data }) {
                 try {
                     const result = JSON.parse(data);
                     console.log(result);
@@ -197,7 +198,7 @@
                 } catch (e) { }
             };
 
-            ws.onclose = () => setTimeout(init, 3000);
+            ws.onclose = function () { setTimeout(init, 3000) };
         }
 
         show({});
