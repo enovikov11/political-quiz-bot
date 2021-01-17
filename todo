@@ -1,4 +1,21 @@
-fix page reload obs
-low try catch index.js / nodemon
-прикрыть секретным токеном + nginx
-тесты
+feature indivisual(
+    индивидуальные результаты
+)
+
+
+test sharp(
+    стабильность sharp
+)
+
+test video(
+    тест сделать puppetter, который подключается в ws и дампит
+)
+
+test load(
+    нагрузочный тест
+)
+
+
+feature clircles(
+    пропорциональные кружочки
+)

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <style>
+        @font-face {
+            font-family: 'Jost';
+            src: url('./Jost-SemiBold.ttf');
+        }
+
+        body {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 1920px;
+            height: 1080px;
+            margin: 0;
+            font-family: 'Jost';
+
+            background-color: lightgrey;
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .questions {
+            position: fixed;
+            top: 425px;
+            left: 53px;
+
+            width: 975px;
+            height: 575px;
+
+            color: white;
+        }
+
+        .questions-row {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 72px;
+        }
+
+        .questions-number-column {
+            flex-basis: 70px;
+            flex-shrink: 0;
+            flex-grow: 0;
+        }
+
+        .questions-text-column {
+            background-color: #96AFC7;
+            padding: 3px 24px 13px 24px;
+        }
+
+        .questions-results {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            flex-grow: 1;
+            padding: 0px 16px;
+        }
+
+        .questions-results-item-container {
+            position: absolute;
+            top: 143px;
+            font-size: 25px;
+        }
+
+        .questions-results-item {
+            position: relative;
+            left: -50%;
+            background-color: rgba(150, 175, 199, 0.6);
+            padding: 3px 25px;
+        }
+
+        .results-count {
+            background-color: rgba(150, 175, 199, 0.6);
+            position: fixed;
+            top: 1009px;
+            left: 228px;
+            color: white;
+            font-size: 23px;
+            padding: 1px 13px;
+        }
+
+        .results {
+            position: fixed;
+            top: 229px;
+            left: 175px;
+            font-size: 23px;
+            width: 480px;
+            height: 480px;
+        }
+
+        #results-admin {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 45px;
+            height: 45px;
+        }
+    </style>
+</head>
+
+<body>
+    <img src="./questions-background.png" class="background" id="questions-background" onerror="loadError()"></img>
+    <img src="./results-background.png" class="background" id="results-background" onerror="loadError()"></img>
+
+    <div class="questions">
+        <div class="questions-row" style="font-size: 45px;line-height: 48px;" id="question-big">
+            <div class="questions-number-column"></div>
+            <div class="questions-text-column"></div>
+        </div>
+        <div class="questions-row" style="font-size: 35px;line-height: 38px;" id="question-little">
+            <div class="questions-number-column"></div>
+            <div class="questions-text-column" style="background-color: rgba(150, 175, 199, 0.4);">карл у клары украл
+                короллы, клара у карла урала кларнет</div>
+        </div>
+        <div style="position: relative;" id="question-little-answers">
+            <img src="./answers.png" style="position: absolute;width: 905px;top: -5px;left: 70px;"
+                onerror="loadError()"></img>
+            <img src="./admin.png" style="position: absolute;width: 60px;top: 54px;left: 496px;" id="admin"
+                onerror="loadError()"></img>
+            <div class="questions-results-item-container" style="left: 119px;">
+                <div class="questions-results-item" id="answer-1"></div>
+            </div>
+            <div class="questions-results-item-container" style="left: 323px;">
+                <div class="questions-results-item" id="answer-2"></div>
+            </div>
+            <div class="questions-results-item-container" style="left: 526px;">
+                <div class="questions-results-item" id="answer-3"></div>
+            </div>
+            <div class="questions-results-item-container" style="left: 729px;">
+                <div class="questions-results-item" id="answer-4"></div>
+            </div>
+            <div class="questions-results-item-container" style="left: 933px;">
+                <div class="questions-results-item" id="answer-5"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="results">
+        <div class="results-svg"></div>
+        <img src="admin.png" onerror="loadError()" id="results-admin"><img>
+    </div>
+    <div class="results-count"></div>
+
+    <script src="./svg.js"></script>
+    <script>
+        function show(state) {
+            document.querySelector('#questions-background').style.display = (state.bigQuestion || state.smallQuestion) ? '' : 'none';
+
+            document.querySelector('#question-big').style.display = state.bigQuestion ? '' : 'none';
+            document.querySelector('#question-big .questions-number-column').innerText = state?.bigQuestion?.number + '.';
+            document.querySelector('#question-big .questions-text-column').innerText = state?.bigQuestion?.text;
+
+            document.querySelector('#question-little').style.display = state.smallQuestion ? '' : 'none';
+            document.querySelector('#question-little-answers').style.display = state.smallQuestion ? '' : 'none';
+            document.querySelector('#question-little .questions-number-column').innerText = state?.smallQuestion?.number + '.';
+            document.querySelector('#question-little .questions-text-column').innerText = state?.smallQuestion?.text;
+
+            document.querySelector('#answer-1').innerText = state?.smallQuestion && state?.smallQuestion['-1'];
+            document.querySelector('#answer-2').innerText = state?.smallQuestion && state?.smallQuestion['-0.5'];
+            document.querySelector('#answer-3').innerText = state?.smallQuestion && state?.smallQuestion['0'];
+            document.querySelector('#answer-4').innerText = state?.smallQuestion && state?.smallQuestion['0.5'];
+            document.querySelector('#answer-5').innerText = state?.smallQuestion && state?.smallQuestion['1'];
+            document.querySelector('#admin').style.left = 496 + 410 * (+state?.smallQuestion?.admin) + 'px';
+
+            document.querySelector('#results-background').style.display = state.results ? '' : 'none';
+
+            // const usersCount = (state?.results?.admin ? 1 : 0) + (state?.results?.you ? 1 : 0) + (state?.results?.users?.length || 0);
+            document.querySelector('.results-count').innerText = 'Всего пользователей: ' + (state?.results?.users?.length || 0).toLocaleString();
+            document.querySelector('.results-count').style.display = state?.results ? '' : 'none';
+
+            document.querySelector('.results-svg').innerHTML = state?.results ? makeResultsSvg(state.results) : '';
+            document.querySelector('#results-admin').style.display = state?.results?.admin ? '' : 'none';
+            document.querySelector('#results-admin').style.left = (-22.5 + state?.results?.admin[0] * 480) + 'px';
+            document.querySelector('#results-admin').style.top = (-22.5 + state?.results?.admin[1] * 480) + 'px';
+        }
+
+        function loadError() {
+            document.body.innerHTML = '';
+            location.reload();
+        }
+
+        function init() {
+            const ws = new WebSocket(location.href.replace(/^http/, 'ws'));
+
+            ws.onmessage = ({ data }) => {
+                try {
+                    const result = JSON.parse(data);
+                    console.log(result);
+                    show(result);
+                } catch (e) { }
+            };
+
+            ws.onclose = () => setTimeout(init, 3000);
+        }
+
+        show({});
+        init();
+    </script>
+
+</body>
+
+</html>

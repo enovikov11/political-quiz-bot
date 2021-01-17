@@ -1,5 +1,6 @@
 .DS_Store
-secret.json
-temp.md
 node_modules
+secret.json
+data
 certs
+img-data

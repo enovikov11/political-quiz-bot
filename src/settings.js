@@ -2,7 +2,7 @@ const fs = require('fs');
 const YAML = require('yaml');
 
 const { messages, buttons, questions } = YAML.parse(fs.readFileSync('./src/settings.yaml', 'utf8'));
-const { apiKey, adminChatId, userResultBaseUrl } = require('../secret.json');
+const { apiKey, adminChatId, prefix, publicUrlBase } = require('../secret.json');
 
 module.exports = {
     apiLogFilename: './data/api.json.log',
@@ -11,7 +11,8 @@ module.exports = {
     apiBase: "https://api.telegram.org/", // https://core.telegram.org/bots/api
     apiKey,
     adminChatId,
-    userResultBaseUrl,
+    prefix,
+    publicUrlBase,
 
     messages: messages.ru,
     buttons: buttons.ru,
