@@ -12,12 +12,14 @@ try {
 function adminBroadcast() {
     state.adminStatus = getStatus(state, adminChatId);
 
-    for (let chatId in state.users) {
-        if (!state.users[chatId].isActive) { continue; }
-        state.users[chatId].isActive = false;
+    if (state.adminStatus !== "end") {
+        for (let chatId in state.users) {
+            if (!state.users[chatId].isActive) { continue; }
+            state.users[chatId].isActive = false;
 
-        const { text, reply_markup } = getQuestionMessage(state, chatId, state.adminStatus);
-        apiEnqueue([chatId, 'sendMessage', { chat_id: +chatId, text, reply_markup }]);
+            const { text, reply_markup } = getQuestionMessage(state, chatId, state.adminStatus);
+            apiEnqueue([chatId, 'sendMessage', { chat_id: +chatId, text, reply_markup }]);
+        }
     }
 
     doUpdateResult();
