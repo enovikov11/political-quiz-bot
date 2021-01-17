@@ -29,21 +29,11 @@ function getDivision(state, questionId) {
 }
 
 function getIndivisualResults(state, chatId) {
-    const output = {
+    return {
         users: Object.values(state.users).map(({ answers }) => answers).map(getUserPoint).filter(Boolean),
-        admin: getUserPoint(state.answers[adminChatId]),
-        you: getUserPoint(state.answers[chatId])
-    }
-
-    if (!output.admin) {
-        output.admin = undefined;
-    }
-
-    if (!output.you) {
-        output.you = undefined;
-    }
-
-    return output;
+        admin: state.users[adminChatId].answers ? getUserPoint(state.users[adminChatId].answers) : undefined,
+        you: state.users[chatId].answers ? getUserPoint(state.users[chatId].answers) : undefined
+    };
 }
 
 function getResults(state) {
@@ -55,7 +45,7 @@ function getResults(state) {
         return {
             results: {
                 users: Object.values(state.users).map(({ answers }) => answers).map(getUserPoint).filter(Boolean),
-                admin: getUserPoint(state.answers[adminChatId])
+                admin: getUserPoint(state.users[adminChatId].answers)
             }
         };
     }
