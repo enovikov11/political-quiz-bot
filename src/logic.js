@@ -32,7 +32,7 @@ function getIndivisualResults(state, chatId) {
     const output = {
         users: Object.values(state.users).map(({ answers }) => answers).map(getUserPoint).filter(Boolean),
         admin: getUserPoint(state.answers[adminChatId]),
-        you = getUserPoint(state.answers[chatId])
+        you: getUserPoint(state.answers[chatId])
     }
 
     if (!output.admin) {
