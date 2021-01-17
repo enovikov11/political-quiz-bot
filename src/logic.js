@@ -60,12 +60,10 @@ function getResults(state, chatId) {
         };
     }
 
-    if (state.adminStatus < questions.length - 1) {
-        output.bigQuestion = {
-            "number": state.adminStatus + 1,
-            "text": questions[state.adminStatus].question
-        };
-    }
+    output.bigQuestion = {
+        "number": state.adminStatus + 1,
+        "text": questions[state.adminStatus].question
+    };
 
     return output;
 }
