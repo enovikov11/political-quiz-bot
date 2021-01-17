@@ -7,10 +7,6 @@ async function apiRaw(method, data, timeout = 2000, retries = 1) {
         return {};
     }
 
-    // if (method === 'sendUserResult') {
-
-    // }
-
     const reqId = Date.now() + Math.random();
 
     fs.appendFile(fd, JSON.stringify({ reqId, requestMethod: method, requestData: data }) + '\n', () => { });

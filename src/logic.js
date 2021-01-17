@@ -1,4 +1,4 @@
-const { adminChatId, messages, buttons, questions, minQuestionsResult } = require('./settings');
+const { adminChatId, messages, buttons, questions, minQuestionsResult, publicUrlBase, prefix } = require('./settings');
 
 function getUserPoint(answers) {
     let x = 0, xMax = 0, y = 0, yMax = 0, count = 0;
@@ -28,18 +28,24 @@ function getDivision(state, questionId) {
     return results;
 }
 
-function getResults(state) {
+function getResults(state, chatId) {
     if (state.adminStatus === 'start') {
         return {};
     }
 
     if (state.adminStatus === 'end') {
-        return {
+        const output = {
             results: {
                 users: Object.values(state.users).map(({ answers }) => answers).map(getUserPoint).filter(Boolean),
                 admin: getUserPoint(state.answers[adminChatId])
             }
         };
+
+        if (chatId) {
+            output.you = getUserPoint(state.answers[chatId])
+        }
+
+        return output;
     }
 
     const output = {};
@@ -129,7 +135,7 @@ function doSendNext(state, chatId, calls) {
         const point = getUserPoint(state.users[chatId].answers), x = Math.round(point[0] * 100), y = Math.round(point[1] * 100);
         calls.push([chatId, 'sendMessage', { chat_id: chatId, text: messages.description, parse_mode: 'HTML' }]);
         calls.push([chatId, 'sendMessage', { chat_id: chatId, text: `Твой результат на <b>${100 - x}%</b> за <b>Равенство</b> и на <b>${x}%</b> за <b>Рынки</b>, на <b>${100 - y}%</b> за <b>Власть</b> и на <b>${y}%</b> за <b>Свободу</b>`, parse_mode: 'HTML' }]);
-        // calls.push([chatId, 'sendPhoto', { chat_id: chatId, photo: `${userResultBaseUrl}results/${x}-${y}.png` }]);
+        calls.push([chatId, 'sendPhoto', { chat_id: chatId, photo: `${publicUrlBase}${prefix}-img-data/${chatId}.png` }]);
     }
 
     else if (state.adminStatus === 'end') {

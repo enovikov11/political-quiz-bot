@@ -2,7 +2,7 @@ const fs = require('fs');
 const YAML = require('yaml');
 
 const { messages, buttons, questions } = YAML.parse(fs.readFileSync('./src/settings.yaml', 'utf8'));
-const { apiKey, adminChatId, prefix } = require('../secret.json');
+const { apiKey, adminChatId, prefix, publicUrlBase } = require('../secret.json');
 
 module.exports = {
     apiLogFilename: './data/api.json.log',
@@ -12,6 +12,7 @@ module.exports = {
     apiKey,
     adminChatId,
     prefix,
+    publicUrlBase,
 
     messages: messages.ru,
     buttons: buttons.ru,

@@ -12,6 +12,7 @@ const { stateFilename, prefix } = require('./settings'),
 let jsonResults = '{}';
 
 app.use(`/${prefix}`, express.static('./static'));
+app.use(`/${prefix}-img-data`, express.static('./img-data'));
 
 wss.on('connection', (conn, req) => {
     if (req.url !== `/${prefix}/`) {
