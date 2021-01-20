@@ -1,0 +1,77 @@
+<style>
+    body {
+        margin: 0;
+    }
+
+    canvas {
+        border: gray 1px solid;
+    }
+</style>
+<canvas height="600" width="600"></canvas><br />
+<div style="font-size:25px;font-family: monospace;"></div>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js"
+    integrity="sha256-ur/YlHMU96MxHEsy3fHGszZHas7NzH4RQlD4tDVvFhw=" crossorigin="anonymous"></script>
+<script src="./local/data.js"></script>
+<script>
+    const canvas = document.querySelector('canvas'), ctx = canvas.getContext('2d');
+
+
+    function rebuild({ x, y }) {
+        const alpha = 0.1 * x / 300, r = (10 / 600) * y / 300;
+
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, 600, 600);
+
+        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+
+        for (let i = 0; i < data.length; i++) {
+            const [x, y] = data[i];
+            ctx.beginPath();
+            ctx.arc(x * 600, y * 600, r * 600, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+
+        let max = 0, imgdata = ctx.getImageData(0, 0, 600, 600);
+
+        for (let i = 0; i < imgdata.data.length; i += 4) {
+            if (imgdata.data[i] / 255 > max) { max = imgdata.data[i] / 255; }
+        }
+
+        for (let x = 0; x < 600; x++) {
+            for (let y = 0; y < 600; y++) {
+                if (x < 300) {
+                    if (y < 300) {
+                        imgdata.data[(y * 600 + x) * 4] = 255 * imgdata.data[(y * 600 + x) * 4] / 255;
+                        imgdata.data[(y * 600 + x) * 4 + 1] = 42 * imgdata.data[(y * 600 + x) * 4 + 1] / 255;
+                        imgdata.data[(y * 600 + x) * 4 + 2] = 49 * imgdata.data[(y * 600 + x) * 4 + 2] / 255;
+                    } else {
+                        imgdata.data[(y * 600 + x) * 4] = 0 * imgdata.data[(y * 600 + x) * 4] / 255;
+                        imgdata.data[(y * 600 + x) * 4 + 1] = 223 * imgdata.data[(y * 600 + x) * 4 + 1] / 255;
+                        imgdata.data[(y * 600 + x) * 4 + 2] = 75 * imgdata.data[(y * 600 + x) * 4 + 2] / 255;
+                    }
+                } else {
+                    if (y < 300) {
+                        imgdata.data[(y * 600 + x) * 4] = 11 * imgdata.data[(y * 600 + x) * 4] / 255;
+                        imgdata.data[(y * 600 + x) * 4 + 1] = 210 * imgdata.data[(y * 600 + x) * 4 + 1] / 255;
+                        imgdata.data[(y * 600 + x) * 4 + 2] = 223 * imgdata.data[(y * 600 + x) * 4 + 2] / 255;
+                    } else {
+                        imgdata.data[(y * 600 + x) * 4] = 221 * imgdata.data[(y * 600 + x) * 4] / 255;
+                        imgdata.data[(y * 600 + x) * 4 + 1] = 47 * imgdata.data[(y * 600 + x) * 4 + 1] / 255;
+                        imgdata.data[(y * 600 + x) * 4 + 2] = 253 * imgdata.data[(y * 600 + x) * 4 + 2] / 255;
+                    }
+                }
+            }
+        }
+
+        ctx.putImageData(imgdata, 0, 0);
+
+        document.querySelector('div').innerText = `alpha = ${alpha.toFixed(5)}\nr = ${r.toFixed(5)}\nmax = ${max.toFixed(5)}`;
+    }
+
+    const clicks = [];
+
+    canvas.addEventListener('mousemove', _.debounce(rebuild, 100, { maxWait: 100, trailing: true }))
+    canvas.addEventListener('click', ({ x, y }) => {
+        clicks.push({ alpha: 0.1 * x / 300, r: (10 / 600) * y / 300 })
+    });
+</script>

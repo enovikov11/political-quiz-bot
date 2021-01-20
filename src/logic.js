@@ -201,4 +201,4 @@ function processUpdates(state, updates, calls) {
     }
 }
 
-module.exports = { initialState, processUpdates, getQuestionMessage, getStatus, getResults, getIndivisualResults };
+module.exports = { initialState, processUpdates, getQuestionMessage, getStatus, getResults, getIndivisualResults, getUserPoint };
