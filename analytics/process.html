@@ -13,149 +13,80 @@
     integrity="sha256-ur/YlHMU96MxHEsy3fHGszZHas7NzH4RQlD4tDVvFhw=" crossorigin="anonymous"></script>
 <script src="./local/data.js"></script>
 <script>
-
-    // function makeSequence(stepsCount, maxValue, minValue) {
-    //     return new Array(stepsCount).fill().map((_, i) => maxValue / (maxValue / minValue) ** (i / (stepsCount - 1)));
-    // }
-
-    const canvas = document.querySelector('canvas'), ctx = canvas.getContext('2d');
-
-    function draw(alpha, r, coloured) {
-        ctx.fillStyle = 'black';
-        ctx.fillRect(0, 0, 600, 600);
-
-        for (let i = 0; i < data.length; i++) {
-            const [x, y] = data[i];
-
-            if (coloured) {
-                ctx.fillStyle = 'rgba(' + (x < 0.5 ? (y < 0.5 ? '255,42,49' : '0,223,75') : (y < 0.5 ? '11,210,223' : '221, 47, 253')) + ',' + alpha + ')';
-            } else {
-                ctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
-            }
-
-            ctx.beginPath();
-            ctx.arc(x * 600, y * 600, r * 600, 0, 2 * Math.PI);
-            ctx.fill();
-        }
-
-        document.querySelector('div').innerText = `alpha = ${alpha.toFixed(5)}\nr = ${r.toFixed(5)}`;
-    }
-
-    function getMax() {
-        let max = 0, imgdata = ctx.getImageData(0, 0, 600, 600);
-
-        for (let i = 0; i < imgdata.data.length; i += 4) {
-            if (imgdata.data[i] / 255 > max) { max = imgdata.data[i] / 255; }
-        }
-
-        return max;
-    }
-
-    function initDebug() {
-        function rebuild({ x, y }) {
-            const alpha = 0.1 * x / 300, r = (10 / 600) * y / 300;
-
-            draw(alpha, r, true);
-
-            // const max = getMax();
-
-            // document.querySelector('div').innerText = `alpha = ${alpha.toFixed(5)}\nr = ${r.toFixed(5)}\nmax = ${max.toFixed(5)}`;
-        }
-
-        window.clicks = [];
-
-        canvas.addEventListener('mousemove', _.debounce(rebuild, 100, { maxWait: 100, trailing: true }))
-        canvas.addEventListener('click', ({ x, y }) => {
-            window.clicks.push({ alpha: 0.1 * x / 300, r: (10 / 600) * y / 300 })
-        });
-    }
-
-    // initDebug();
-
-    async function init(items) {
-        for (let i = 0; i < items.length - 1; i++) {
-            for (let j = 1; j < 10; j++) {
-                draw(
-                    (items[i + 1].alpha * j + items[i].alpha * (10 - j)) / 10,
-                    (items[i + 1].r * j + items[i].r * (10 - j)) / 10,
-                    true
-                );
-                await new Promise(res => setTimeout(res, 100));
-            }
-        }
-    }
-
-    // init([
-    //     { "alpha": 0.19933333333333333, "r": 0.0018333333333333335 },
-    //     { "alpha": 0.1446666666666667, "r": 0.003666666666666667 },
-    //     { "alpha": 0.07800000000000001, "r": 0.0064444444444444445 },
-    //     { "alpha": 0.03233333333333334, "r": 0.00988888888888889 },
-    //     { "alpha": 0.04666666666666667, "r": 0.012388888888888889 },
-    //     { "alpha": 0.023333333333333334, "r": 0.015388888888888888 }
-    // ]);
-
-    draw(0.020666666666666667, 0.016555555555555556, true);
-
-
-    // const canvas = document.querySelector('canvas'), ctx = canvas.getContext('2d');
-
-
-    // function rebuild({ x, y }) {
-    //     const alpha = 0.1 * x / 300, r = (10 / 600) * y / 300;
-
-    //     ctx.fillStyle = 'black';
-    //     ctx.fillRect(0, 0, 600, 600);
-
-    //     ctx.fillStyle = `rgba(255,255,255,${alpha})`;
-
-    //     for (let i = 0; i < data.length; i++) {
-    //         const [x, y] = data[i];
-    //         ctx.beginPath();
-    //         ctx.arc(x * 600, y * 600, r * 600, 0, 2 * Math.PI);
-    //         ctx.fill();
-    //     }
-
-    //     let max = 0, imgdata = ctx.getImageData(0, 0, 600, 600);
+    // function getMax() {
+    //     let max = 0, imgdata = ctx.getImageData(0, 0, size, size);
 
     //     for (let i = 0; i < imgdata.data.length; i += 4) {
     //         if (imgdata.data[i] / 255 > max) { max = imgdata.data[i] / 255; }
     //     }
 
-    //     for (let x = 0; x < 600; x++) {
-    //         for (let y = 0; y < 600; y++) {
-    //             if (x < 300) {
-    //                 if (y < 300) {
-    //                     imgdata.data[(y * 600 + x) * 4] = 255 * imgdata.data[(y * 600 + x) * 4] / 255;
-    //                     imgdata.data[(y * 600 + x) * 4 + 1] = 42 * imgdata.data[(y * 600 + x) * 4 + 1] / 255;
-    //                     imgdata.data[(y * 600 + x) * 4 + 2] = 49 * imgdata.data[(y * 600 + x) * 4 + 2] / 255;
-    //                 } else {
-    //                     imgdata.data[(y * 600 + x) * 4] = 0 * imgdata.data[(y * 600 + x) * 4] / 255;
-    //                     imgdata.data[(y * 600 + x) * 4 + 1] = 223 * imgdata.data[(y * 600 + x) * 4 + 1] / 255;
-    //                     imgdata.data[(y * 600 + x) * 4 + 2] = 75 * imgdata.data[(y * 600 + x) * 4 + 2] / 255;
-    //                 }
-    //             } else {
-    //                 if (y < 300) {
-    //                     imgdata.data[(y * 600 + x) * 4] = 11 * imgdata.data[(y * 600 + x) * 4] / 255;
-    //                     imgdata.data[(y * 600 + x) * 4 + 1] = 210 * imgdata.data[(y * 600 + x) * 4 + 1] / 255;
-    //                     imgdata.data[(y * 600 + x) * 4 + 2] = 223 * imgdata.data[(y * 600 + x) * 4 + 2] / 255;
-    //                 } else {
-    //                     imgdata.data[(y * 600 + x) * 4] = 221 * imgdata.data[(y * 600 + x) * 4] / 255;
-    //                     imgdata.data[(y * 600 + x) * 4 + 1] = 47 * imgdata.data[(y * 600 + x) * 4 + 1] / 255;
-    //                     imgdata.data[(y * 600 + x) * 4 + 2] = 253 * imgdata.data[(y * 600 + x) * 4 + 2] / 255;
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     ctx.putImageData(imgdata, 0, 0);
-
-    //     document.querySelector('div').innerText = `alpha = ${alpha.toFixed(5)}\nr = ${r.toFixed(5)}\nmax = ${max.toFixed(5)}`;
+    //     return max;
     // }
 
-    // const clicks = [];
+    // function initDebug() { // size = 600
+    //     function rebuild({ x, y }) {
+    //         const alpha = 0.1 * x / 300, r = (10 / size) * y / 300;
 
-    // canvas.addEventListener('mousemove', _.debounce(rebuild, 100, { maxWait: 100, trailing: true }))
-    // canvas.addEventListener('click', ({ x, y }) => {
-    //     clicks.push({ alpha: 0.1 * x / 300, r: (10 / 600) * y / 300 })
-    // });
+    //         draw(alpha, r, false);
+
+    //         const max = getMax();
+
+    //         document.querySelector('div').innerText = `alpha = ${alpha.toFixed(5)}\nr = ${r.toFixed(5)}\nmax = ${max.toFixed(5)}`;
+    //     }
+
+    //     window.clicks = [];
+
+    //     canvas.addEventListener('mousemove', _.debounce(rebuild, 100, { maxWait: 100, trailing: true }))
+    //     canvas.addEventListener('click', ({ x, y }) => {
+    //         window.clicks.push({ alpha: 0.1 * x / 300, r: (10 / size) * y / 300 })
+    //     });
+    // }
+
+    // initDebug();
+
+    const canvas = document.querySelector('canvas'), ctx = canvas.getContext('2d'),
+        alpha = 0.16, r = 0.003, size = 600;
+
+
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, size, size);
+
+    for (let [x, y] of data) {
+        ctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
+
+        ctx.beginPath();
+        ctx.arc(x * size, y * size, r * size, 0, 2 * Math.PI);
+        ctx.fill();
+    }
+
+    let imgdata = ctx.getImageData(0, 0, size, size);
+
+    for (let x = 0; x < size; x++) {
+        for (let y = 0; y < size; y++) {
+            if (x < size / 2) {
+                if (y < size / 2) {
+                    imgdata.data[(y * size + x) * 4] = 255 * imgdata.data[(y * size + x) * 4] / 255;
+                    imgdata.data[(y * size + x) * 4 + 1] = 42 * imgdata.data[(y * size + x) * 4 + 1] / 255;
+                    imgdata.data[(y * size + x) * 4 + 2] = 49 * imgdata.data[(y * size + x) * 4 + 2] / 255;
+                } else {
+                    imgdata.data[(y * size + x) * 4] = 0 * imgdata.data[(y * size + x) * 4] / 255;
+                    imgdata.data[(y * size + x) * 4 + 1] = 223 * imgdata.data[(y * size + x) * 4 + 1] / 255;
+                    imgdata.data[(y * size + x) * 4 + 2] = 75 * imgdata.data[(y * size + x) * 4 + 2] / 255;
+                }
+            } else {
+                if (y < size / 2) {
+                    imgdata.data[(y * size + x) * 4] = 11 * imgdata.data[(y * size + x) * 4] / 255;
+                    imgdata.data[(y * size + x) * 4 + 1] = 210 * imgdata.data[(y * size + x) * 4 + 1] / 255;
+                    imgdata.data[(y * size + x) * 4 + 2] = 223 * imgdata.data[(y * size + x) * 4 + 2] / 255;
+                } else {
+                    imgdata.data[(y * size + x) * 4] = 221 * imgdata.data[(y * size + x) * 4] / 255;
+                    imgdata.data[(y * size + x) * 4 + 1] = 47 * imgdata.data[(y * size + x) * 4 + 1] / 255;
+                    imgdata.data[(y * size + x) * 4 + 2] = 253 * imgdata.data[(y * size + x) * 4 + 2] / 255;
+                }
+            }
+        }
+    }
+
+    ctx.putImageData(imgdata, 0, 0);
+
 </script>
