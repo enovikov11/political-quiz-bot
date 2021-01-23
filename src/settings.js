@@ -19,7 +19,3 @@ module.exports = {
     questions: questions.map(q => { q.question = q.question.ru; return q; }),
     minQuestionsResult: 30
 };
-
-// DELETE AFTER DEBUG
-// module.exports.questions = module.exports.questions.splice(52);
-// module.exports.minQuestionsResult = 2;

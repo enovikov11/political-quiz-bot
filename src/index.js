@@ -30,7 +30,7 @@ function doUpdateResult() {
 }
 
 const adminBroadcastDebounced = lodash.debounce(adminBroadcast, 10000, { maxWait: 10000, trailing: true }),
-    doUpdateResultDebounced = lodash.debounce(doUpdateResult, 10000, { maxWait: 10000, trailing: true });
+    doUpdateResultDebounced = lodash.debounce(doUpdateResult, 60000, { maxWait: 60000, trailing: true });
 
 (async () => {
     doUpdateResult();
@@ -54,11 +54,11 @@ const adminBroadcastDebounced = lodash.debounce(adminBroadcast, 10000, { maxWait
                     apiEnqueue(calls[i])
                 }
             } else if (calls[i][1] === "adminBroadcast") {
-                if (state.adminStatus === 'start') {
-                    adminBroadcast();
-                } else {
-                    adminBroadcastDebounced();
-                }
+                // if (state.adminStatus === 'start') {
+                //     adminBroadcast();
+                // } else {
+                //     adminBroadcastDebounced();
+                // }
             }
         }
         if (updates.ok && updates?.result?.length > 0) {

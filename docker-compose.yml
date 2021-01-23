@@ -4,3 +4,7 @@ services:
     build: .
     ports:
       - 443:443
+    volumes:
+      - ./certs:/app/certs
+      - ./secret.json:/app/secret.json
+      - ./data:/app/data
