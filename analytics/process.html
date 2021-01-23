@@ -13,37 +13,6 @@
     integrity="sha256-ur/YlHMU96MxHEsy3fHGszZHas7NzH4RQlD4tDVvFhw=" crossorigin="anonymous"></script>
 <script src="./local/data.js"></script>
 <script>
-    // function getMax() {
-    //     let max = 0, imgdata = ctx.getImageData(0, 0, size, size);
-
-    //     for (let i = 0; i < imgdata.data.length; i += 4) {
-    //         if (imgdata.data[i] / 255 > max) { max = imgdata.data[i] / 255; }
-    //     }
-
-    //     return max;
-    // }
-
-    // function initDebug() { // size = 600
-    //     function rebuild({ x, y }) {
-    //         const alpha = 0.1 * x / 300, r = (10 / size) * y / 300;
-
-    //         draw(alpha, r, false);
-
-    //         const max = getMax();
-
-    //         document.querySelector('div').innerText = `alpha = ${alpha.toFixed(5)}\nr = ${r.toFixed(5)}\nmax = ${max.toFixed(5)}`;
-    //     }
-
-    //     window.clicks = [];
-
-    //     canvas.addEventListener('mousemove', _.debounce(rebuild, 100, { maxWait: 100, trailing: true }))
-    //     canvas.addEventListener('click', ({ x, y }) => {
-    //         window.clicks.push({ alpha: 0.1 * x / 300, r: (10 / size) * y / 300 })
-    //     });
-    // }
-
-    // initDebug();
-
     const canvas = document.querySelector('canvas'), ctx = canvas.getContext('2d'),
         alpha = 0.16, r = 0.003, size = 600;
 
