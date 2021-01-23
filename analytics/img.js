@@ -1,19 +1,22 @@
-const state = require('/path/to/state.json'), { getUserPoint } = require('../src/logic'),
-    sharp = require('sharp'), { makeResultsSvg } = require('./svg'),
+const state = require('/Users/enovikov11/Desktop/state.json'), { getUserPoint } = require('../src/logic'),
+    sharp = require('sharp'),
     tgUids = [/* admins uids */],
     points = Object.values(state.users).map(({ answers }) => answers).map(getUserPoint).filter(Boolean);
 
-function makeSequence(stepsCount, maxValue, minValue) {
-    return new Array(stepsCount).fill().map((_, i) => maxValue / (maxValue / minValue) ** (i / (stepsCount - 1)));
+function color(x, y) {
+    return x < 0.5 ? (y < 0.5 ? '#FF2A31' : '#00DF4B') : (y < 0.5 ? '#0BD2DF' : '#DD2FFD');
 }
 
-const sizesSequence = makeSequence(10, 40, 1), opacitySequence = makeSequence(10, 1, 1 / 256);
+function makeResultsSvg(points, svgSize = 1000, { pointSize, opacity } = {}) {
+    const content = points.map(([x, y]) =>
+        `<circle cx="${svgSize * x}" cy="${svgSize * y}" r="${pointSize}" fill="${color(x, y)}" fill-opacity="${opacity || 1}"/>`);
+
+    return `<svg width="${svgSize}" height="${svgSize}" viewBox="0 0 ${svgSize} ${svgSize}">
+    <rect x="0" y="0" width="${svgSize}" height="${svgSize}"></rect>
+    ${content}</svg>`;
+}
 
 (async () => {
-    for (let i = 0; i < 10; i++) {
-        for (let j = 0; j < 10; j++) {
-            const buffer = Buffer.from(makeResultsSvg(points, 600, { pointSize: sizesSequence[i], opacity: opacitySequence[j] }));
-            await sharp(buffer).png().toFile(`./analytics/out-${i}-${j}.png`);
-        }
-    }
+    const buffer = Buffer.from(makeResultsSvg(points, 600, { pointSize: 0.003 * 600, opacity: 0.16 }));
+    await sharp(buffer).png().toFile(`./analytics/out.png`);
 })().catch(console.error);
