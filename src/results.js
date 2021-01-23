@@ -1,8 +1,8 @@
 const { stateFilename, prefix } = require('./settings'),
     express = require('express'), https = require('https'), ws = require('ws'), fs = require('fs'),
     app = express(), server = https.createServer({
-        key: fs.readFileSync('/app/certs/privkey.pem', 'utf-8'),
-        cert: fs.readFileSync('/app/certs/cert.pem', 'utf-8')
+        key: fs.readFileSync('./certs/privkey.pem', 'utf-8'),
+        cert: fs.readFileSync('./certs/cert.pem', 'utf-8')
     }, app),
     wss = new ws.Server({ server }), connections = new Set();
 
