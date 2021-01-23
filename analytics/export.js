@@ -4,7 +4,7 @@ const answers = Object.values(state.users).map(({ answers }) => answers),
     sortedAnswers = answers.map(answers => JSON.stringify(answers)).sort((a, b) => a > b ? 1 : -1)
         .map(json => JSON.parse(json));
 
-fs.writeFileSync('./anonymized-sorted-answers_DATE.json', JSON.stringify(sortedAnswers));
+fs.writeFileSync('./analytics/local/anonymized-sorted-answers_DATE.json', JSON.stringify(sortedAnswers));
 
 const csv = ['user-id,question-number,answer']
 
@@ -15,4 +15,7 @@ for (let i = 0; i < sortedAnswers.length; i++) {
     }
 }
 
-fs.writeFileSync('./anonymized-sorted-answers_DATE.csv', csv.join('\n'));
+fs.writeFileSync('./analytics/local/anonymized-sorted-answers_DATE.csv', csv.join('\n'));
+
+const points = Object.values(state.users).map(({ answers }) => answers).map(getUserPoint).filter(Boolean);
+fs.writeFileSync('./analytics/local/data.js', `const data = ${JSON.stringify(points)}`);
