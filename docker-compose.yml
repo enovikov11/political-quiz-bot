@@ -8,3 +8,4 @@ services:
       - ./certs:/app/certs
       - ./secret.json:/app/secret.json
       - ./data:/app/data
+      - ./img-data:/app/img-data
