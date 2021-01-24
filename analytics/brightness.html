@@ -1,0 +1,61 @@
+<style>
+    body {
+        margin: 0;
+    }
+
+    canvas {
+        border: gray 1px solid;
+    }
+</style>
+<canvas height="600" width="600"></canvas><br />
+<div style="font-size:25px;font-family: monospace;"></div>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js"
+    integrity="sha256-ur/YlHMU96MxHEsy3fHGszZHas7NzH4RQlD4tDVvFhw=" crossorigin="anonymous"></script>
+<script src="./local/data.js"></script>
+<script>
+    const canvas = document.querySelector('canvas'), ctx = canvas.getContext('2d'),
+        alpha = 0.16, r = 0.003, size = 600;
+
+
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, size, size);
+
+    for (let [x, y] of data) {
+        ctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
+
+        ctx.beginPath();
+        ctx.arc(x * size, y * size, r * size, 0, 2 * Math.PI);
+        ctx.fill();
+    }
+
+    let imgdata = ctx.getImageData(0, 0, size, size);
+
+    for (let x = 0; x < size; x++) {
+        for (let y = 0; y < size; y++) {
+            if (x < size / 2) {
+                if (y < size / 2) {
+                    imgdata.data[(y * size + x) * 4] = 255 * imgdata.data[(y * size + x) * 4] / 255;
+                    imgdata.data[(y * size + x) * 4 + 1] = 42 * imgdata.data[(y * size + x) * 4 + 1] / 255;
+                    imgdata.data[(y * size + x) * 4 + 2] = 49 * imgdata.data[(y * size + x) * 4 + 2] / 255;
+                } else {
+                    imgdata.data[(y * size + x) * 4] = 0 * imgdata.data[(y * size + x) * 4] / 255;
+                    imgdata.data[(y * size + x) * 4 + 1] = 223 * imgdata.data[(y * size + x) * 4 + 1] / 255;
+                    imgdata.data[(y * size + x) * 4 + 2] = 75 * imgdata.data[(y * size + x) * 4 + 2] / 255;
+                }
+            } else {
+                if (y < size / 2) {
+                    imgdata.data[(y * size + x) * 4] = 11 * imgdata.data[(y * size + x) * 4] / 255;
+                    imgdata.data[(y * size + x) * 4 + 1] = 210 * imgdata.data[(y * size + x) * 4 + 1] / 255;
+                    imgdata.data[(y * size + x) * 4 + 2] = 223 * imgdata.data[(y * size + x) * 4 + 2] / 255;
+                } else {
+                    imgdata.data[(y * size + x) * 4] = 221 * imgdata.data[(y * size + x) * 4] / 255;
+                    imgdata.data[(y * size + x) * 4 + 1] = 47 * imgdata.data[(y * size + x) * 4 + 1] / 255;
+                    imgdata.data[(y * size + x) * 4 + 2] = 253 * imgdata.data[(y * size + x) * 4 + 2] / 255;
+                }
+            }
+        }
+    }
+
+    ctx.putImageData(imgdata, 0, 0);
+
+</script>
