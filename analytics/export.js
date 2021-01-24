@@ -1,4 +1,4 @@
-const state = require('/path/to/state.json'), fs = require('fs');
+const state = require('./data/state.json'), fs = require('fs');
 
 const answers = Object.values(state.users).map(({ answers }) => answers),
     sortedAnswers = answers.map(answers => JSON.stringify(answers)).sort((a, b) => a > b ? 1 : -1)
