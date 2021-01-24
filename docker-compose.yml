@@ -2,6 +2,7 @@ version: "3"
 services:
   political-quiz-bot:
     build: .
+    restart: always
     ports:
       - 443:443
     volumes:
