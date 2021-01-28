@@ -16,3 +16,7 @@ services:
       - "127.0.0.1:8080:80"
     volumes:
       - ./pgadmin-data:/var/lib/pgadmin
+  bot-downstream:
+    build: ./bot-downstream-old
+    environment:
+      - POSTGRES_PASSWORD

@@ -1,3 +1,5 @@
 .env
+.gradle
+build
 postgres-data
 pgadmin-data
