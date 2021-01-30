@@ -25,6 +25,8 @@ describe('logic', () => {
     test('getResults', () => {
         const answers = makeAnswers(), { full, semiFinished, first, middle } = makeResults();
 
+        // что-то тут не сходится, в тестовых данных ты ожидаешь поля last / current,
+        // а в getResults такие поля не создаются, или я пропустил
         expect(getResults({ maxAvailableQuestionId: 54, nextAvailableUpdateAt: null, answers })).toEqual(full);
         expect(getResults({ maxAvailableQuestionId: 54, nextAvailableUpdateAt: 123, answers })).toEqual(semiFinished);
         expect(getResults({ maxAvailableQuestionId: 0, nextAvailableUpdateAt: null, answers })).toEqual(first);
