@@ -216,6 +216,7 @@ function processUpdates(state, updates, calls) {
 }
 
 function resetUser(state, chatId){
+    if(chatId === adminChatId) {return;}
     state.users[chatId] =  {
         answers: new Array(questions.length).fill(null),
         cachedPoint: null,
