@@ -99,14 +99,20 @@ function doAnswerCallback(chatId, update, calls) {
     }
 }
 
-function doWelcome(chatId, update, calls) {
+function doWelcome(state, chatId, update, calls) {
     if (update?.message?.text === '/start') {
         calls.push([chatId, 'sendMessage', { chat_id: chatId, text: messages.welcome }]);
         calls.push([chatId, 'wait', {}]);
+        resetUser(state, chatId)
     }
 }
 
 function doProcessAnswer(state, chatId, update, calls) {
+    if (update?.callback_query?.data === "reset") {
+        resetUser(state, chatId)
+        return;
+    }
+
     if (!/^answer\d+\|(-1|-0\.5|0|0\.5|1)$/.test(update?.callback_query?.data || '')) { return; }
     const [questionId, answerValue] = update?.callback_query?.data.replace('answer', '').split('|').map(n => +n);
     state.users[chatId].answers[questionId] = String(answerValue);
@@ -128,13 +134,21 @@ function doSendNext(state, chatId, calls) {
         if (chatId !== adminChatId) {
             calls.push([chatId, 'sendMessage', { chat_id: chatId, text: "Стрим еще не начался, подожди пожалуйста" }]);
         }
-
     }
 
     else if (status === "end") {
         const point = getUserPoint(state.users[chatId].answers), x = Math.round(point[0] * 100), y = Math.round(point[1] * 100);
         calls.push([chatId, 'sendMessage', { chat_id: chatId, text: messages.description, parse_mode: 'HTML' }]);
-        calls.push([chatId, 'sendMessage', { chat_id: chatId, text: `Твой результат на <b>${100 - x}%</b> за <b>Равенство</b> и на <b>${x}%</b> за <b>Рынки</b>, на <b>${100 - y}%</b> за <b>Власть</b> и на <b>${y}%</b> за <b>Свободу</b>`, parse_mode: 'HTML' }]);
+        calls.push([chatId, 'sendMessage', {
+            chat_id: chatId,
+            text: `Твой результат на <b>${100 - x}%</b> за <b>Равенство</b> и на <b>${x}%</b> за <b>Рынки</b>, на <b>${100 - y}%</b> за <b>Власть</b> и на <b>${y}%</b> за <b>Свободу</b>`,
+            parse_mode: 'HTML' ,
+            reply_markup: {
+                inline_keyboard: [
+                    { text: "Начать заново", callback_data: "reset" }
+                ]
+            }
+        }]);
         calls.push([chatId, 'sendPhoto', { chat_id: chatId, photo: `${publicUrlBase}${prefix}-img-data/${chatId}.png` }]);
     }
 
@@ -187,7 +201,7 @@ function processUpdates(state, updates, calls) {
         try {
             state.users[chatId].isActive = true;
             doAnswerCallback(chatId, update, calls);
-            doWelcome(chatId, update, calls);
+            doWelcome(state, chatId, update, calls);
             doProcessAnswer(state, chatId, update, calls);
             doSendNext(state, chatId, calls);
 
@@ -199,6 +213,14 @@ function processUpdates(state, updates, calls) {
             doSendError(chatId, calls);
         }
     }
+}
+
+function resetUser(state, chatId){
+    state.users[chatId] =  {
+        answers: new Array(questions.length).fill(null),
+        cachedPoint: null,
+        isActive: true
+    };
 }
 
 module.exports = { initialState, processUpdates, getQuestionMessage, getStatus, getResults, getIndivisualResults, getUserPoint };
