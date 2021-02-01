@@ -145,7 +145,7 @@ function doSendNext(state, chatId, calls) {
             parse_mode: 'HTML' ,
             reply_markup: {
                 inline_keyboard: [
-                    { text: "Начать заново", callback_data: "reset" }
+                    [{ text: "Начать заново", callback_data: "reset" }]
                 ]
             }
         }]);
