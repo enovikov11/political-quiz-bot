@@ -21,7 +21,7 @@ async function results2buffer(results, chatId) {
                 left: 172 - 15 + Math.round(480 * results.you[0]),
                 top: 176 - 15 + Math.round(480 * results.you[1])
             }
-        ].filter(Boolean)).png().toFile('./img-data/' + chatId + '.png');
+        ].filter(Boolean)).png().toFile('./img-data/' + chatId + '-' + results.salt + '.png');
 }
 
 module.exports = { results2buffer };
