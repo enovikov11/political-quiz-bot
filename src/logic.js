@@ -32,7 +32,8 @@ function getIndivisualResults(state, chatId) {
     return {
         users: Object.values(state.users).map(({ answers }) => answers).map(getUserPoint).filter(Boolean),
         admin: state.users[adminChatId].answers ? getUserPoint(state.users[adminChatId].answers) : undefined,
-        you: state.users[chatId].answers ? getUserPoint(state.users[chatId].answers) : undefined
+        you: state.users[chatId].answers ? getUserPoint(state.users[chatId].answers) : undefined,
+        salt: state.users[chatId].salt
     };
 }
 
@@ -149,7 +150,7 @@ function doSendNext(state, chatId, calls) {
                 ]
             }
         }]);
-        calls.push([chatId, 'sendPhoto', { chat_id: chatId, photo: `${publicUrlBase}${prefix}-img-data/${chatId}.png` }]);
+        calls.push([chatId, 'sendPhoto', { chat_id: chatId, photo: `${publicUrlBase}${prefix}-img-data/${chatId}-${state.users[chatId].salt}.png` }]);
     }
 
     else if (state.adminStatus === 'end') {
@@ -195,7 +196,8 @@ function processUpdates(state, updates, calls) {
         state.users[chatId] = state.users[chatId] || {
             answers: new Array(questions.length).fill(null),
             cachedPoint: null,
-            isActive: true
+            isActive: true,
+            salt: state.lastUpdateId
         };
 
         try {
