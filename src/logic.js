@@ -222,7 +222,8 @@ function resetUser(state, chatId){
     state.users[chatId] =  {
         answers: new Array(questions.length).fill(null),
         cachedPoint: null,
-        isActive: true
+        isActive: true,
+        salt: state.lastUpdateId
     };
 }
 
